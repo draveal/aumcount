@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>AUM Zähler</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
+#app{width:100%;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top,20px) 24px env(safe-area-inset-bottom,24px)}
+
+.topbar{width:100%;display:flex;justify-content:space-between;align-items:center;padding-top:12px}
+.title{font-size:20px;font-weight:500;color:#7080b0}
+.pill{font-size:13px;padding:5px 14px;border-radius:20px;background:#1e1e38;color:#5060a0}
+.pill.p{background:#0a2040;color:#60b8f0}
+.pill.c{background:#0a2818;color:#40d090}
+.pill.e{background:#281808;color:#f09050}
+
+.ring-wrap{position:relative;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg);display:block}
+#rbg{fill:none;stroke:#1e1e38;stroke-width:12}
+#rfill{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset 0.8s linear,stroke 0.4s}
+.rcenter{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.rtime{font-size:clamp(32px,8vw,52px);font-weight:500;color:#e8eaff}
+.rsub{font-size:clamp(12px,3vw,16px);color:#505080;margin-top:4px}
+
+.aum-num{font-size:clamp(100px,28vw,160px);font-weight:500;color:#e8eaff;line-height:1;text-align:center}
+.aum-lbl{font-size:clamp(14px,3.5vw,20px);color:#505080;text-align:center;margin-top:-4px}
+
+.dots{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;width:100%;padding:0 8px}
+.d{width:clamp(14px,4vw,20px);height:clamp(14px,4vw,20px);border-radius:50%;background:#1e1e38;transition:background 0.2s,transform 0.15s}
+.d.done{background:#534AB7}
+.d.active{background:#1D9E75;transform:scale(1.4)}
+
+#sig{min-height:28px;text-align:center;font-size:clamp(16px,4vw,22px);font-weight:500;color:#f09050}
+.vwrap{width:100%;height:5px;background:#1e1e38;border-radius:3px;overflow:hidden}
+#vbar{height:100%;width:0%;background:#1D9E75;transition:width 0.1s}
+
+.btn{width:100%;padding:clamp(18px,5vw,26px);border-radius:18px;border:none;font-size:clamp(18px,5vw,24px);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;-webkit-tap-highlight-color:transparent}
+.btn:active{opacity:0.85}
+.go{background:#40d090;color:#071a10}
+.stop{background:#E24B4A;color:#fff}
+
+.dbg{width:100%;background:#181830;border-radius:14px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:6px 20px}
+.dbg span{font-size:13px;color:#505080}
+.dbg b{color:#8090c0}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <span class="title">🕉 AUM Zähler</span>
+    <span id="pill" class="pill">Bereit</span>
+  </div>
+
+  <div class="ring-wrap" id="ringwrap">
+    <svg id="ringsvg" viewBox="0 0 220 220">
+      <circle id="rbg" cx="110" cy="110" r="95"/>
+      <circle id="rfill" cx="110" cy="110" r="95" stroke="#1D9E75"/>
+    </svg>
+    <div class="rcenter">
+      <div id="tdisp" class="rtime">00:00</div>
+      <div id="tsub" class="rsub">Gesamt</div>
+    </div>
+  </div>
+
+  <div>
+    <div id="big" class="aum-num">0</div>
+    <div class="aum-lbl">AUMs gezählt</div>
+  </div>
+
+  <div class="dots" id="dots"></div>
+
+  <div id="sig"></div>
+  <div class="vwrap"><div id="vbar"></div></div>
+
+  <button id="btn" class="btn go" onclick="toggle()">
+    ▶ Starten
+  </button>
+
+  <div class="dbg">
+    <span>Lautheit: <b id="dvol">–</b></span>
+    <span>Status: <b id="dstate">Idle</b></span>
+    <span>Dauer: <b id="ddur">–</b></span>
+  </div>
+</div>
+
+<script>
+const PREP=300,CHANT=420,WARN=60,MIND=4,MAXD=35,THR=0.012;
+let CIRC=0;
+
+function initRing(){
+  const svg=document.getElementById('ringsvg');
+  const s=Math.min(window.innerWidth-48, window.innerHeight*0.28);
+  svg.style.width=s+'px'; svg.style.height=s+'px';
+  const r=95, c=2*Math.PI*r;
+  CIRC=c;
+  document.getElementById('rfill').style.strokeDasharray=c;
+  document.getElementById('rfill').style.strokeDashoffset=c;
+}
+initRing();
+window.addEventListener('resize',initRing);
+
+let run=false,tot=0,csec=0,cnt=0,st='silence',astart=0,lend=0;
+let iv=null,actx=null,an=null,ms=null,af=null,da=null,wt=null;
+const $=id=>document.getElementById(id);
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function ph(){if(!run)return'i';if(tot<PREP)return'p';if(tot<PREP+CHANT)return'c';return'e'}
+function ring(pct,col){const e=$('rfill');e.style.strokeDashoffset=CIRC*(1-pct);e.setAttribute('stroke',col)}
+function dots(){
+  const n=Math.max(21,cnt+2),c=$('dots');
+  c.innerHTML=Array.from({length:Math.min(n,28)},(_,i)=>`<div class="d${i<cnt?' done':''}"></div>`).join('');
+}
+function flash(m,col){$('sig').textContent=m;$('sig').style.color=col||'#f09050';clearTimeout(wt);wt=setTimeout(()=>$('sig').textContent='',3000)}
+function beep(ff,dd){
+  if(!actx)return;
+  dd.forEach((t,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=ff[i]||ff[0];const s=actx.currentTime+t/1000;g.gain.setValueAtTime(0.3,s);g.gain.exponentialRampToValueAtTime(0.001,s+0.2);o.start(s);o.stop(s+0.22)});
+}
+function rms(){
+  if(!an||!da)return 0;
+  an.getByteTimeDomainData(da);
+  let s=0;for(let i=0;i<da.length;i++){const v=(da[i]-128)/128;s+=v*v;}
+  return Math.sqrt(s/da.length);
+}
+function aloop(){
+  if(!run)return;
+  const v=rms();
+  $('vbar').style.width=Math.min(100,v/THR*50)+'%';
+  $('dvol').textContent=v.toFixed(4);
+  const p=ph();
+  if(p==='c'||p==='e'){
+    const now=performance.now();
+    if(st==='silence'){
+      if(v>THR){st='singing';astart=now;$('dstate').textContent='Singt'}
+    } else {
+      if(v<=THR){
+        const dur=(now-astart)/1000;$('ddur').textContent=dur.toFixed(1)+'s';
+        if(dur>=MIND&&dur<=MAXD){
+          cnt++;lend=now;$('big').textContent=cnt;dots();
+          if(cnt===21){beep([523,659,784],[0,300,600]);flash('Ziel erreicht! 21 AUMs ','#40d090')}
+          else flash('AUM #'+cnt,'#40d090');
+        }
+        st='silence';$('dstate').textContent='Pause';
+      }
+    }
+  }
+  af=requestAnimationFrame(aloop);
+}
+async function mic(){
+  try{
+    actx=new(window.AudioContext||window.webkitAudioContext)();
+    ms=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    const src=actx.createMediaStreamSource(ms);
+    an=actx.createAnalyser();an.fftSize=512;da=new Uint8Array(an.fftSize);
+    src.connect(an);aloop();
+  }catch(e){flash('Mikrofon: '+e.message,'#E24B4A')}
+}
+function stopaudio(){
+  if(af){cancelAnimationFrame(af);af=null}
+  if(ms){ms.getTracks().forEach(t=>t.stop());ms=null}
+  if(actx){actx.close();actx=null}
+  an=null;da=null;
+}
+function tick(){
+  if(!run)return;
+  tot++;const p=ph();
+  if(p==='c')csec++;
+  $('tdisp').textContent=fmt(tot);
+  const pl=$('pill');
+  if(p==='p'){pl.textContent='Vorbereitung';pl.className='pill p';ring(tot/PREP,'#378ADD');$('tsub').textContent='Vorbereitung';if(PREP-tot===0)flash('Jetzt singen!','#40d090')}
+  else if(p==='c'){pl.textContent='Chanten';pl.className='pill c';ring(csec/CHANT,'#1D9E75');$('tsub').textContent='Chanten';
+    if(st==='silence'&&lend>0&&(performance.now()-lend)/1000>WARN&&cnt<21){lend=performance.now();beep([880,880,880],[0,250,500]);flash('Weiter singen! Zu wenige AUMs','#f09050')}
+  } else {
+    pl.textContent='Cooldown';pl.className='pill e';ring(1,'#D85A30');$('tsub').textContent='Nachklang';
+    if(tot===PREP+CHANT&&cnt<21){beep([880,880,880],[0,250,500]);flash('Weiter singen!','#f09050')}
+  }
+}
+function toggle(){
+  const b=$('btn');
+  if(!run){
+    run=true;tot=0;csec=0;cnt=0;st='silence';astart=0;lend=0;
+    $('big').textContent='0';$('sig').textContent='';$('dstate').textContent='Wartet';
+    dots();mic();iv=setInterval(tick,1000);
+    b.className='btn stop';b.innerHTML='⏹ Stoppen';
+  } else {
+    run=false;clearInterval(iv);stopaudio();
+    b.className='btn go';b.innerHTML='▶ Starten';
+    $('pill').textContent='Beendet';$('pill').className='pill';
+    ring(0,'#1D9E75');$('tsub').textContent='Beendet';$('dstate').textContent='Idle';
+    flash('Beendet – '+cnt+' AUMs','#40d090');
+  }
+}
+</script>
+</body>
+</html>
