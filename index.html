@@ -9,7 +9,17 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
-#app{width:100%;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top,16px) 20px env(safe-area-inset-bottom,20px)}
+#app{width:100%;height:100vh;display:flex;flex-direction:column;position:relative}
+
+/* tab screens */
+.screen{display:none;flex-direction:column;align-items:center;justify-content:space-between;flex:1;overflow-y:auto;padding:env(safe-area-inset-top,16px) 20px 12px}
+.screen.active{display:flex}
+
+/* bottom nav */
+.bottomnav{flex-shrink:0;width:100%;display:flex;justify-content:space-around;align-items:center;padding:8px 0 max(8px,env(safe-area-inset-bottom,8px));background:#181830;border-top:1px solid #1e1e38}
+.navbtn{background:none;border:none;color:#505080;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;cursor:pointer;padding:4px 16px;-webkit-tap-highlight-color:transparent}
+.navbtn .navicon{font-size:20px}
+.navbtn.active{color:#40d090}
 
 .topbar{width:100%;display:flex;justify-content:space-between;align-items:center;padding-top:8px}
 .title{font-size:18px;font-weight:500;color:#7080b0}
@@ -61,13 +71,12 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .vwrap{width:100%;height:6px;background:#1e1e38;border-radius:3px;overflow:hidden}
 #vbar{height:100%;width:0%;border-radius:3px;transition:width 0.08s}
 
-/* 21 overlay */
-#overlay{display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(10,46,24,0.92);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:16px;border-radius:0}
-#overlay.show{display:flex}
-.ov-num{font-size:100px;font-weight:500;color:#40d090;line-height:1}
-.ov-txt{font-size:22px;color:#9FE1CB;text-align:center;padding:0 24px}
-.ov-sub{font-size:14px;color:#085041;text-align:center}
-.ov-btn{padding:14px 40px;border-radius:14px;border:none;background:#40d090;color:#071a10;font-size:17px;font-weight:500;cursor:pointer;margin-top:8px}
+/* dezenter Ziel-erreicht Hinweis, kein Blocking-Overlay, kein Tap nötig */
+#goalbanner{max-height:0;overflow:hidden;width:100%;background:#0a2818;border-radius:14px;text-align:center;transition:max-height 0.5s ease,opacity 0.5s ease,margin 0.5s ease;opacity:0;margin-top:0}
+#goalbanner.show{max-height:90px;opacity:1;margin-top:10px}
+#goalbanner .gb-inner{padding:14px 16px}
+.gb-txt{font-size:15px;font-weight:500;color:#40d090}
+.gb-sub{font-size:12px;color:#3a8f6f;margin-top:2px}
 
 .btn{width:100%;padding:clamp(15px,4vw,22px);border-radius:16px;border:none;font-size:clamp(17px,4.5vw,22px);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;-webkit-tap-highlight-color:transparent}
 .btn:active{opacity:0.85}
@@ -77,82 +86,294 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .dbg{width:100%;background:#181830;border-radius:12px;padding:9px 14px;display:flex;flex-wrap:wrap;gap:4px 16px}
 .dbg span{font-size:11px;color:#505080}
 .dbg b{color:#8090c0}
+
+/* history tab content (now a regular screen, not an overlay) */
+.hist-top{width:100%;display:flex;justify-content:center;align-items:center;padding-top:4px;flex-shrink:0}
+.hist-title{font-size:18px;font-weight:500;color:#e8eaff}
+.hist-section{width:100%;margin-top:18px}
+.hist-h{font-size:12px;color:#505080;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px}
+
+.streakrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.streak-card{background:#181830;border-radius:12px;padding:12px 8px;text-align:center}
+.streak-val{font-size:22px;font-weight:500;color:#e8eaff}
+.streak-lbl{font-size:10px;color:#505080;margin-top:2px}
+
+.heatmap{display:grid;grid-template-columns:repeat(13,1fr);gap:3px}
+.hcell{width:100%;aspect-ratio:1;border-radius:3px;background:#1e1e38}
+.hcell.l1{background:#26215C}
+.hcell.l2{background:#3a35a0}
+.hcell.l3{background:#534AB7}
+.hcell.l4{background:#40d090}
+
+.chart-wrap{width:100%;background:#181830;border-radius:12px;padding:12px}
+.chart-empty{font-size:12px;color:#505080;text-align:center;padding:20px 0}
+
+.sess-list{display:flex;flex-direction:column;gap:8px}
+.sess-row{background:#181830;border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.sess-date{font-size:13px;color:#e8eaff}
+.sess-meta{font-size:11px;color:#505080;margin-top:2px}
+.sess-cnt{font-size:16px;font-weight:500;color:#e8eaff}
+.sess-cnt.goal{color:#40d090}
+
+.hist-actions{display:flex;gap:10px;margin-top:18px;margin-bottom:16px}
+.hist-btn{flex:1;padding:12px;border-radius:12px;border:none;font-size:13px;font-weight:500;cursor:pointer;background:#1e1e38;color:#8090c0}
+.hist-btn.danger{color:#E24B4A}
+
+/* settings tab */
+.set-section{width:100%;margin-top:18px}
+.set-h{font-size:12px;color:#505080;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px}
+.set-card{background:#181830;border-radius:14px;padding:4px 16px}
+.set-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #1e1e38}
+.set-row:last-child{border-bottom:none}
+.set-lbl{font-size:14px;color:#e8eaff}
+.set-sub{font-size:11px;color:#505080;margin-top:1px}
+.set-input{width:64px;text-align:center;background:#0f0f24;border:1px solid #2a2a4a;border-radius:8px;color:#e8eaff;font-size:14px;padding:6px 4px}
+.set-input:focus{outline:none;border-color:#534AB7}
+
+.toggle{width:46px;height:26px;border-radius:14px;background:#2a2a4a;position:relative;cursor:pointer;flex-shrink:0;transition:background 0.25s}
+.toggle.on{background:#40d090}
+.toggle .knob{width:20px;height:20px;border-radius:50%;background:#e8eaff;position:absolute;top:3px;left:3px;transition:left 0.25s}
+.toggle.on .knob{left:23px}
+
+.set-save{width:100%;padding:14px;border-radius:14px;border:none;background:#534AB7;color:#fff;font-size:15px;font-weight:500;cursor:pointer;margin-top:18px}
+.set-note{font-size:11px;color:#505080;text-align:center;margin-top:10px;padding-bottom:8px}
 </style>
 </head>
 <body>
-<div id="app" style="position:relative">
+<div id="app">
 
-  <div id="overlay">
-    <div class="ov-num" id="ov-count">21</div>
-    <div class="ov-txt">Praxis abgeschlossen!</div>
-    <div class="ov-sub" id="ov-sub">Du kannst noch weiter singen</div>
-    <button class="ov-btn" onclick="dismissOverlay()">Weiter zählen</button>
-  </div>
+  <!-- ===== TAB 1: ZÄHLER ===== -->
+  <div class="screen active" id="screen-counter">
 
-  <div class="topbar">
-    <span class="title">🕉 AUM Zähler</span>
-    <span id="pill" class="pill">Bereit</span>
-  </div>
+    <div class="topbar">
+      <span class="title">🕉 AUM Zähler</span>
+      <span id="pill" class="pill">Bereit</span>
+    </div>
 
-  <div class="rings" id="ringwrap">
-    <svg id="ringsvg" viewBox="0 0 220 220">
-      <circle id="rbg1" cx="110" cy="110" r="95"/>
-      <circle id="rbg2" cx="110" cy="110" r="78"/>
-      <circle id="rfill1" cx="110" cy="110" r="95" stroke="#378ADD"/>
-      <circle id="rfill2" cx="110" cy="110" r="78" stroke="#534AB7"/>
-    </svg>
-    <div class="rcenter">
-      <div id="tdisp" class="rtime">00:00</div>
-      <div id="tsub" class="rsub">Gesamt</div>
-      <div id="tdisp2" class="rtime2">–</div>
+    <div class="rings" id="ringwrap">
+      <svg id="ringsvg" viewBox="0 0 220 220">
+        <circle id="rbg1" cx="110" cy="110" r="95"/>
+        <circle id="rbg2" cx="110" cy="110" r="78"/>
+        <circle id="rfill1" cx="110" cy="110" r="95" stroke="#378ADD"/>
+        <circle id="rfill2" cx="110" cy="110" r="78" stroke="#534AB7"/>
+      </svg>
+      <div class="rcenter">
+        <div id="tdisp" class="rtime">00:00</div>
+        <div id="tsub" class="rsub">Gesamt</div>
+        <div id="tdisp2" class="rtime2">–</div>
+      </div>
+    </div>
+
+    <div>
+      <div id="big" class="aum-num">0</div>
+      <div class="aum-lbl">AUMs gezählt</div>
+    </div>
+
+    <div id="goalbanner">
+      <div class="gb-inner">
+        <div class="gb-txt" id="gb-txt">🔔 Ziel erreicht – 21 AUMs</div>
+        <div class="gb-sub">Du kannst weiter singen, der Gong klingt nur einmal</div>
+      </div>
+    </div>
+
+    <div class="prog-wrap">
+      <div id="prog-bar"></div>
+      <div id="prog-txt">0 / 21</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div id="stat-avg" class="stat-val">–</div>
+        <div class="stat-lbl">Ø Dauer (s)</div>
+      </div>
+      <div class="stat">
+        <div id="stat-last" class="stat-val">–</div>
+        <div class="stat-lbl">Letztes AUM (s)</div>
+      </div>
+    </div>
+
+    <div class="dots" id="dots"></div>
+
+    <div id="sig"></div>
+    <div class="vwrap"><div id="vbar"></div></div>
+
+    <button id="btn" class="btn go" onclick="toggle()">▶ Starten</button>
+
+    <div class="dbg">
+      <span>RMS: <b id="dvol">–</b></span>
+      <span>Schwelle: <b id="dthr">–</b></span>
+      <span>Band: <b id="dband">–</b></span>
+      <span>Status: <b id="dstate">Idle</b></span>
+      <span>Dauer: <b id="ddur">–</b></span>
     </div>
   </div>
 
-  <div>
-    <div id="big" class="aum-num">0</div>
-    <div class="aum-lbl">AUMs gezählt</div>
-  </div>
+  <!-- ===== TAB 2: VERLAUF ===== -->
+  <div class="screen" id="screen-hist">
+    <div class="hist-top"><span class="hist-title">📊 Verlauf</span></div>
 
-  <div class="prog-wrap">
-    <div id="prog-bar"></div>
-    <div id="prog-txt">0 / 21</div>
-  </div>
-
-  <div class="stats">
-    <div class="stat">
-      <div id="stat-avg" class="stat-val">–</div>
-      <div class="stat-lbl">Ø Dauer (s)</div>
+    <div class="hist-section">
+      <div class="hist-h">Streak</div>
+      <div class="streakrow">
+        <div class="streak-card"><div id="h-streak" class="streak-val">0</div><div class="streak-lbl">Tage in Folge</div></div>
+        <div class="streak-card"><div id="h-best" class="streak-val">0</div><div class="streak-lbl">Längste Streak</div></div>
+        <div class="streak-card"><div id="h-sessions" class="streak-val">0</div><div class="streak-lbl">Sessions gesamt</div></div>
+      </div>
     </div>
-    <div class="stat">
-      <div id="stat-last" class="stat-val">–</div>
-      <div class="stat-lbl">Letztes AUM (s)</div>
+
+    <div class="hist-section">
+      <div class="hist-h">Letzte 13 Wochen</div>
+      <div class="heatmap" id="h-heatmap"></div>
+    </div>
+
+    <div class="hist-section">
+      <div class="hist-h">Ø AUM-Dauer Trend</div>
+      <div class="chart-wrap" id="h-chart"></div>
+    </div>
+
+    <div class="hist-section">
+      <div class="hist-h">Gesamt</div>
+      <div class="streakrow">
+        <div class="streak-card"><div id="h-totalaum" class="streak-val">0</div><div class="streak-lbl">AUMs gesamt</div></div>
+        <div class="streak-card"><div id="h-totaltime" class="streak-val">0</div><div class="streak-lbl">Min. geübt</div></div>
+        <div class="streak-card"><div id="h-avgall" class="streak-val">–</div><div class="streak-lbl">Ø Dauer (s)</div></div>
+      </div>
+    </div>
+
+    <div class="hist-section">
+      <div class="hist-h">Sessions</div>
+      <div class="sess-list" id="h-list"></div>
+    </div>
+
+    <div class="hist-actions">
+      <button class="hist-btn" onclick="exportHist()">⬇ Exportieren</button>
+      <button class="hist-btn danger" onclick="clearHist()">🗑 Löschen</button>
     </div>
   </div>
 
-  <div class="dots" id="dots"></div>
+  <!-- ===== TAB 3: EINSTELLUNGEN ===== -->
+  <div class="screen" id="screen-settings">
+    <div class="hist-top"><span class="hist-title">⚙ Einstellungen</span></div>
 
-  <div id="sig"></div>
-  <div class="vwrap"><div id="vbar"></div></div>
+    <div class="set-section">
+      <div class="set-h">Zeiten</div>
+      <div class="set-card">
+        <div class="set-row">
+          <div><div class="set-lbl">Vorbereitung</div><div class="set-sub">Minuten vor dem Chanten</div></div>
+          <input type="number" min="0" max="60" class="set-input" id="set-prep" value="7">
+        </div>
+        <div class="set-row">
+          <div><div class="set-lbl">Chant-Dauer</div><div class="set-sub">geplante Sing-Phase in Minuten</div></div>
+          <input type="number" min="1" max="120" class="set-input" id="set-chant" value="7">
+        </div>
+        <div class="set-row">
+          <div><div class="set-lbl">Ziel-Anzahl</div><div class="set-sub">AUMs pro Praxis</div></div>
+          <input type="number" min="1" max="500" class="set-input" id="set-goal" value="21">
+        </div>
+        <div class="set-row">
+          <div><div class="set-lbl">Mindestdauer</div><div class="set-sub">Sekunden, ab wann ein Ton zählt</div></div>
+          <input type="number" min="1" max="20" class="set-input" id="set-mindur" value="5">
+        </div>
+      </div>
+    </div>
 
-  <button id="btn" class="btn go" onclick="toggle()">▶ Starten</button>
+    <div class="set-section">
+      <div class="set-h">Benachrichtigung</div>
+      <div class="set-card">
+        <div class="set-row">
+          <div><div class="set-lbl">Erinnerung bei Stille</div><div class="set-sub">Gong, wenn lange nicht gesungen wurde</div></div>
+          <div class="toggle on" id="tog-warn" onclick="toggleSetting('warn')"><div class="knob"></div></div>
+        </div>
+        <div class="set-row">
+          <div><div class="set-lbl">Stille-Schwelle</div><div class="set-sub">Sekunden bis zur Erinnerung</div></div>
+          <input type="number" min="10" max="600" class="set-input" id="set-warn" value="60">
+        </div>
+        <div class="set-row">
+          <div><div class="set-lbl">Bonus-Ton</div><div class="set-sub">Klang bei jedem AUM über das Ziel hinaus</div></div>
+          <div class="toggle on" id="tog-bonus" onclick="toggleSetting('bonus')"><div class="knob"></div></div>
+        </div>
+      </div>
+    </div>
 
-  <div class="dbg">
-    <span>RMS: <b id="dvol">–</b></span>
-    <span>Schwelle: <b id="dthr">–</b></span>
-    <span>Band: <b id="dband">–</b></span>
-    <span>Status: <b id="dstate">Idle</b></span>
-    <span>Dauer: <b id="ddur">–</b></span>
+    <button class="set-save" onclick="saveSettings()">Einstellungen speichern</button>
+    <div class="set-note" id="set-note">Wirkt sich auf die nächste Session aus</div>
   </div>
+
+  <!-- ===== BOTTOM NAVIGATION ===== -->
+  <div class="bottomnav">
+    <button class="navbtn active" id="nav-counter" onclick="switchTab('counter')">
+      <span class="navicon">🕉</span><span>Zähler</span>
+    </button>
+    <button class="navbtn" id="nav-hist" onclick="switchTab('hist')">
+      <span class="navicon">📊</span><span>Verlauf</span>
+    </button>
+    <button class="navbtn" id="nav-settings" onclick="switchTab('settings')">
+      <span class="navicon">⚙</span><span>Einstellungen</span>
+    </button>
+  </div>
+
 </div>
 
 <script>
-const PREP=420, CHANT=420, WARN=60, GOAL=21;
+const $=id=>document.getElementById(id);
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+
 const MIN_PEAK_DIST=1.5, SMOOTH=8, PROMINENCE=2.5;
 // AUM-Frequenzband: Grundton + erste Obertöne, breit gefasst für tiefe/hohe Stimmen
 const BAND_LO=70, BAND_HI=800;
 const BAND_RATIO_MIN=0.35; // Mindestanteil der Energie, der im AUM-Band liegen muss
 const ADAPT_NOISE_ALPHA=0.02; // wie schnell sich der Rauschboden in Pausen nachjustiert
 let CIRC1=0, CIRC2=0;
+
+/* ===== Einstellungen (persistiert in localStorage) ===== */
+const SET_KEY='aumSettings';
+const DEFAULT_SET={prepMin:7,chantMin:7,goal:21,minDur:5,warnSec:60,warnOn:true,bonusOn:true};
+let SET={...DEFAULT_SET};
+
+function loadSettings(){
+  try{
+    const raw=localStorage.getItem(SET_KEY);
+    SET=raw?{...DEFAULT_SET,...JSON.parse(raw)}:{...DEFAULT_SET};
+  }catch(e){SET={...DEFAULT_SET};}
+}
+function applySettingsToInputs(){
+  $('set-prep').value=SET.prepMin;
+  $('set-chant').value=SET.chantMin;
+  $('set-goal').value=SET.goal;
+  $('set-mindur').value=SET.minDur;
+  $('set-warn').value=SET.warnSec;
+  $('tog-warn').classList.toggle('on',SET.warnOn);
+  $('tog-bonus').classList.toggle('on',SET.bonusOn);
+}
+function toggleSetting(key){
+  const el=key==='warn'?$('tog-warn'):$('tog-bonus');
+  el.classList.toggle('on');
+}
+function saveSettings(){
+  if(run){flash('Bitte erst die laufende Praxis stoppen','#E24B4A');return;}
+  SET.prepMin=Math.max(0,parseInt($('set-prep').value)||0);
+  SET.chantMin=Math.max(1,parseInt($('set-chant').value)||7);
+  SET.goal=Math.max(1,parseInt($('set-goal').value)||21);
+  SET.minDur=Math.max(1,parseInt($('set-mindur').value)||5);
+  SET.warnSec=Math.max(10,parseInt($('set-warn').value)||60);
+  SET.warnOn=$('tog-warn').classList.contains('on');
+  SET.bonusOn=$('tog-bonus').classList.contains('on');
+  try{localStorage.setItem(SET_KEY,JSON.stringify(SET));}catch(e){}
+  $('set-note').textContent='Gespeichert ✓';
+  setTimeout(()=>{$('set-note').textContent='Wirkt sich auf die nächste Session aus';},2000);
+  // Fortschrittsanzeige im Zähler-Tab an die neue Zieleinstellung anpassen
+  // (nur relevant, falls man zwischen den Tabs wechselt, ohne neu zu starten)
+  if(!run) updateProgress();
+}
+loadSettings();
+
+// Ableitungen aus den Einstellungen, in Sekunden (PREP/CHANT/WARN/GOAL bleiben
+// als Funktionsnamen erhalten, lesen aber jetzt aus SET statt fix zu sein)
+function PREP(){return SET.prepMin*60;}
+function CHANT(){return SET.chantMin*60;}
+function WARN(){return SET.warnSec;}
+function GOALN(){return SET.goal;}
+function MINDUR(){return SET.minDur;}
 
 function initRing(){
   const svg=document.getElementById('ringsvg');
@@ -166,6 +387,7 @@ function initRing(){
 }
 initRing();
 window.addEventListener('resize',initRing);
+applySettingsToInputs();
 
 let run=false,tot=0,csec=0,cnt=0,lend=0,goalShown=false;
 let durations=[],avgDur=0;
@@ -176,18 +398,16 @@ let dynamicThr=0.015,calibrating=false,calibSamples=[];
 let noiseFloor=0.01; // adaptiv nachjustierter Rauschboden während Pausen
 let rmsHistory=[];
 
-const $=id=>document.getElementById(id);
-const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
-function ph(){if(!run)return'i';if(tot<PREP)return'p';if(tot<PREP+CHANT)return'c';return'e'}
+function ph(){if(!run)return'i';if(tot<PREP())return'p';if(tot<PREP()+CHANT())return'c';return'e'}
 
 function ring1(pct,col){const e=$('rfill1');e.style.strokeDashoffset=CIRC1*(1-Math.min(1,pct));e.setAttribute('stroke',col)}
 function ring2(pct,col){const e=$('rfill2');e.style.strokeDashoffset=CIRC2*(1-Math.min(1,pct));e.setAttribute('stroke',col)}
 
 function updateProgress(){
-  const pct=Math.min(100,Math.round(cnt/GOAL*100));
+  const pct=Math.min(100,Math.round(cnt/GOALN()*100));
   $('prog-bar').style.width=pct+'%';
-  $('prog-bar').style.background=cnt>=GOAL?'#40d090':'#534AB7';
-  $('prog-txt').textContent=cnt+' / '+GOAL+' ('+pct+'%)';
+  $('prog-bar').style.background=cnt>=GOALN()?'#40d090':'#534AB7';
+  $('prog-txt').textContent=cnt+' / '+GOALN()+' ('+pct+'%)';
 }
 
 function updateStats(dur){
@@ -200,33 +420,53 @@ function updateStats(dur){
 }
 
 function dots(){
-  const n=Math.max(GOAL,cnt+1),c=$('dots');
+  const n=Math.max(GOALN(),cnt+1),c=$('dots');
   c.innerHTML=Array.from({length:Math.min(n,30)},(_,i)=>{
     let cl='d';
-    if(i<cnt) cl+= i<GOAL?' done':' goal';
+    if(i<cnt) cl+= i<GOALN()?' done':' goal';
     return`<div class="${cl}"></div>`;
   }).join('');
 }
 
 function flash(m,col){$('sig').textContent=m;$('sig').style.color=col||'#f09050';clearTimeout(wt);wt=setTimeout(()=>$('sig').textContent='',3500)}
 
+// Echter Glocken-/Gong-Klang: mehrere leicht unharmonische Teiltöne (wie bei
+// echten Metall-Klangkörpern üblich) mit langem exponentiellem Ausklang,
+// statt eines kurzen Sinus-Beeps. base = Grundfrequenz in Hz.
+function gong(base=185){
+  if(!actx)return;
+  const partials=[1,2.0,2.76,3.31,4.02,5.18]; // typische Glocken-Teilton-Verhältnisse
+  const now=actx.currentTime;
+  partials.forEach((mult,i)=>{
+    const o=actx.createOscillator();
+    const g=actx.createGain();
+    o.type='sine';
+    o.frequency.value=base*mult;
+    o.connect(g);g.connect(actx.destination);
+    const peak=0.4/(i+1); // höhere Teiltöne leiser
+    const dur=3.2-i*0.35; // höhere Teiltöne klingen schneller aus
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(peak,now+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0005,now+Math.max(dur,0.6));
+    o.start(now);
+    o.stop(now+Math.max(dur,0.6)+0.1);
+  });
+}
+
 function beep(ff,dd){
   if(!actx)return;
   dd.forEach((t,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=ff[i]||ff[0];const s=actx.currentTime+t/1000;g.gain.setValueAtTime(0.35,s);g.gain.exponentialRampToValueAtTime(0.001,s+0.28);o.start(s);o.stop(s+0.3)});
 }
 
-function dismissOverlay(){
-  $('overlay').classList.remove('show');
-}
-
 function showGoal(){
   if(goalShown)return;
   goalShown=true;
-  $('ov-count').textContent=cnt;
-  $('ov-sub').textContent='Du hast '+cnt+' AUMs gesungen – wunderbar!';
-  $('overlay').classList.add('show');
-  beep([523,659,784,1047],[0,300,600,900]);
+  gong(185); // einmaliger Gong, kein Popup, keine Bestätigung nötig
   $('big').classList.add('goal');
+  $('gb-txt').textContent='🔔 Ziel erreicht – '+cnt+' AUMs';
+  $('goalbanner').classList.add('show');
+  // Banner blendet nach einer Weile von selbst wieder aus, blockiert nichts
+  setTimeout(()=>{$('goalbanner').classList.remove('show');},6000);
 }
 
 function getRMS(){
@@ -306,7 +546,8 @@ function aloop(){
         $('ddur').textContent=dur.toFixed(1)+'s';
         $('dband').textContent=(avgBandRatio*100).toFixed(0)+'%';
         const bandOk=avgBandRatio>=BAND_RATIO_MIN;
-        if(dur>=0.8&&dur<=10&&bandOk){
+        const md=MINDUR();
+        if(dur>=md&&dur<=md+10&&bandOk){
           const since=(now-lend)/1000;
           if(since>MIN_PEAK_DIST||lend===0){
             cnt++;lend=now;
@@ -314,12 +555,14 @@ function aloop(){
             updateStats(dur);
             updateProgress();
             dots();
-            if(cnt===GOAL) showGoal();
-            else if(cnt>GOAL) flash('AUM #'+cnt+' — Bonus!','#AFA9EC');
+            if(cnt===GOALN()) showGoal();
+            else if(cnt>GOALN()){if(SET.bonusOn)beep([784,659],[0,180]);flash('AUM #'+cnt+' — Bonus!','#AFA9EC');}
             else flash('AUM #'+cnt,'#40d090');
           }
-        } else if(dur>=0.8&&dur<=10&&!bandOk){
+        } else if(dur>=md&&dur<=md+10&&!bandOk){
           flash('Ton ignoriert (kein AUM-Klang)','#7080b0');
+        } else if(dur>0&&dur<md){
+          flash('Zu kurz ('+dur.toFixed(1)+'s) – min. '+md+'s','#7080b0');
         }
         peakMax=0;peakBandRatioSum=0;peakBandRatioN=0;$('dstate').textContent='Pause';
       }
@@ -340,7 +583,22 @@ async function mic(){
     calibrating=true;calibSamples=[];
     flash('Kalibriere... kurz still bleiben','#60b8f0');
     af=requestAnimationFrame(aloop);
-  }catch(e){flash('Mikrofon: '+e.message,'#E24B4A')}
+  }catch(e){
+    flash('Mikrofon: '+e.message,'#E24B4A');
+    // Aufräumen: actx wurde oben schon erzeugt, bevor getUserMedia fehlschlug
+    // (oder ms wurde im Race-Fall unten schon gesetzt) — ohne diesen Aufruf
+    // bleibt der AudioContext offen bzw. ein evtl. doch erteilter Mikrofon-Stream
+    // aktiv (Mikrofon-Lämpchen bleibt an), obwohl die Session schon abgebrochen ist.
+    stopaudio();
+    // Ohne Mikrofon kann nichts erkannt werden — Session sauber abbrechen,
+    // statt den Timer sinnlos weiterlaufen zu lassen, ohne dass je etwas gezählt wird
+    if(run){
+      run=false;clearInterval(iv);
+      const b=$('btn');b.className='btn go';b.innerHTML='▶ Starten';
+      $('pill').textContent='Abgebrochen';$('pill').className='pill';
+      $('dstate').textContent='Idle';
+    }
+  }
 }
 function stopaudio(){
   if(af){cancelAnimationFrame(af);af=null}
@@ -358,31 +616,36 @@ function tick(){
 
   // Inner ring: chant countdown (7 min)
   if(p==='p'){
-    const remPrep=PREP-tot;
+    const remPrep=PREP()-tot;
     $('tdisp2').textContent='Chant in '+fmt(remPrep);
-    ring1(tot/PREP,'#378ADD');
-    ring2(cnt/GOAL,'#534AB7');
+    ring1(tot/PREP(),'#378ADD');
+    ring2(cnt/GOALN(),'#534AB7');
     $('pill').textContent='Vorbereitung';$('pill').className='pill p';
     $('tsub').textContent='Gesamt';
     if(remPrep===0)flash('Jetzt singen!','#40d090');
   } else if(p==='c'){
-    const remChant=CHANT-csec;
+    const remChant=CHANT()-csec;
     $('tdisp2').textContent='Chant: '+fmt(remChant);
-    ring1(csec/CHANT,'#1D9E75');
-    ring2(cnt/GOAL,'#534AB7');
+    ring1(csec/CHANT(),'#1D9E75');
+    ring2(cnt/GOALN(),'#534AB7');
     $('pill').textContent='Chanten';$('pill').className='pill c';
     $('tsub').textContent='Chant-Phase';
-    if(!inPeak&&lend>0&&(performance.now()-lend)/1000>WARN&&cnt<GOAL){
-      lend=performance.now();beep([880,880,880],[0,250,500]);flash('Weiter singen! Erst '+cnt+'/'+GOAL,'#f09050');
+    if(SET.warnOn&&!inPeak&&lend>0&&(performance.now()-lend)/1000>WARN()&&cnt<GOALN()){
+      lend=performance.now();beep([880,880,880],[0,250,500]);flash('Weiter singen! Erst '+cnt+'/'+GOALN(),'#f09050');
     }
-    if(csec===CHANT&&cnt<GOAL){beep([880,880,880],[0,250,500]);flash('Chant-Zeit um! Erst '+cnt+'/'+GOAL,'#f09050');}
+    if(csec===CHANT()&&cnt<GOALN()){beep([880,880,880],[0,250,500]);flash('Chant-Zeit um! Erst '+cnt+'/'+GOALN(),'#f09050');}
   } else {
-    $('tdisp2').textContent='Bonus: '+fmt(tot-PREP-CHANT);
+    $('tdisp2').textContent='Bonus: '+fmt(tot-PREP()-CHANT());
     ring1(1,'#D85A30');
-    ring2(cnt/GOAL,'#534AB7');
-    $('pill').textContent=cnt>=GOAL?'Fertig ✓':'Cooldown';
-    $('pill').className=cnt>=GOAL?'pill done':'pill e';
+    ring2(cnt/GOALN(),'#534AB7');
+    $('pill').textContent=cnt>=GOALN()?'Fertig ✓':'Cooldown';
+    $('pill').className=cnt>=GOALN()?'pill done':'pill e';
     $('tsub').textContent='Nachklang';
+    // Praxis dauert über die geplante Chant-Zeit hinaus, Ziel noch nicht erreicht:
+    // weiterhin regelmäßig erinnern, statt komplett zu verstummen
+    if(SET.warnOn&&!inPeak&&cnt<GOALN()&&lend>0&&(performance.now()-lend)/1000>WARN()){
+      lend=performance.now();beep([880,880,880],[0,250,500]);flash('Praxis läuft weiter – erst '+cnt+'/'+GOALN(),'#f09050');
+    }
   }
 }
 
@@ -394,7 +657,7 @@ function toggle(){
     $('big').textContent='0';$('big').classList.remove('goal');
     $('sig').textContent='';$('dstate').textContent='Wartet';
     $('stat-avg').textContent='–';$('stat-last').textContent='–';
-    $('overlay').classList.remove('show');
+    $('goalbanner').classList.remove('show');
     updateProgress();dots();mic();iv=setInterval(tick,1000);
     b.className='btn stop';b.innerHTML='⏹ Stoppen';
   } else {
@@ -403,8 +666,169 @@ function toggle(){
     $('pill').textContent='Beendet';$('pill').className='pill';
     ring1(0,'#1D9E75');$('tsub').textContent='Beendet';$('dstate').textContent='Idle';
     $('tdisp2').textContent='–';
-    flash('Beendet – '+cnt+' AUMs ('+Math.round(cnt/GOAL*100)+'%)','#40d090');
+    flash('Beendet – '+cnt+' AUMs ('+Math.round(cnt/GOALN()*100)+'%)','#40d090');
+    if(cnt>0) saveSession();
   }
+}
+
+/* ===== Verlauf / Praxis-Historie (localStorage) ===== */
+const HIST_KEY='aumHistory';
+
+function loadHist(){
+  try{
+    const raw=localStorage.getItem(HIST_KEY);
+    return raw?JSON.parse(raw):[];
+  }catch(e){return []}
+}
+function saveHistArr(arr){
+  try{localStorage.setItem(HIST_KEY,JSON.stringify(arr));}catch(e){flash('Speichern fehlgeschlagen','#E24B4A');}
+}
+function saveSession(){
+  const hist=loadHist();
+  hist.push({
+    date:new Date().toISOString(),
+    count:cnt,
+    avgDur:avgDur||0,
+    totalSec:tot,
+    goalReached:cnt>=GOALN()
+  });
+  saveHistArr(hist);
+}
+
+function dayKey(d){ // lokales Datum, nicht UTC, damit Abend-Sessions nicht falsch zugeordnet werden
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function computeStreaks(hist){
+  if(hist.length===0)return{current:0,best:0};
+  const days=new Set(hist.map(s=>dayKey(new Date(s.date))));
+  const sorted=[...days].sort();
+  // längste Streak: aufeinanderfolgende Kalendertage
+  let best=1,run_=1;
+  for(let i=1;i<sorted.length;i++){
+    const prev=new Date(sorted[i-1]),cur=new Date(sorted[i]);
+    const diff=Math.round((cur-prev)/86400000);
+    if(diff===1){run_++;best=Math.max(best,run_);}else{run_=1;}
+  }
+  // aktuelle Streak: von heute oder gestern rückwärts zählen
+  const today=new Date();today.setHours(0,0,0,0);
+  let cur=0;
+  let cursor=new Date(today);
+  if(!days.has(dayKey(cursor))){
+    cursor.setDate(cursor.getDate()-1); // heute noch nicht geübt -> bei gestern starten
+  }
+  while(days.has(dayKey(cursor))){
+    cur++;
+    cursor.setDate(cursor.getDate()-1);
+  }
+  return{current:cur,best:Math.max(best,cur)};
+}
+
+function renderHeatmap(hist){
+  const el=$('h-heatmap');
+  const byDay={};
+  hist.forEach(s=>{const k=dayKey(new Date(s.date));byDay[k]=(byDay[k]||0)+1;});
+  const today=new Date();today.setHours(0,0,0,0);
+  const days=[];
+  for(let i=90;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    days.push(d);
+  }
+  el.innerHTML=days.map(d=>{
+    const n=byDay[dayKey(d)]||0;
+    let cl='hcell';
+    if(n>=3)cl+=' l4';else if(n===2)cl+=' l3';else if(n===1)cl+=' l2';
+    return `<div class="${cl}" title="${dayKey(d)}: ${n} Session(n)"></div>`;
+  }).join('');
+}
+
+function renderChart(hist){
+  const el=$('h-chart');
+  const withDur=hist.filter(s=>s.avgDur>0);
+  if(withDur.length<2){
+    el.innerHTML='<div class="chart-empty">Noch zu wenig Daten für einen Trend</div>';
+    return;
+  }
+  const pts=withDur.slice(-30); // letzte 30 Sessions
+  const W=280,H=110,PAD=10;
+  const vals=pts.map(p=>p.avgDur);
+  const mn=Math.min(...vals)*0.9,mx=Math.max(...vals)*1.1;
+  const range=Math.max(mx-mn,0.1);
+  const stepX=(W-2*PAD)/Math.max(pts.length-1,1);
+  const coords=pts.map((p,i)=>{
+    const x=PAD+i*stepX;
+    const y=H-PAD-((p.avgDur-mn)/range)*(H-2*PAD);
+    return [x,y];
+  });
+  const path=coords.map((c,i)=>(i===0?'M':'L')+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ');
+  const dots=coords.map(c=>`<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="2.5" fill="#40d090"/>`).join('');
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+    <path d="${path}" fill="none" stroke="#534AB7" stroke-width="2"/>
+    ${dots}
+  </svg>
+  <div style="display:flex;justify-content:space-between;font-size:10px;color:#505080;margin-top:4px">
+    <span>${mn.toFixed(1)}s</span><span>letzte ${pts.length} Sessions</span><span>${mx.toFixed(1)}s</span>
+  </div>`;
+}
+
+function renderList(hist){
+  const el=$('h-list');
+  if(hist.length===0){el.innerHTML='<div class="chart-empty">Noch keine Sessions aufgezeichnet</div>';return;}
+  const sorted=[...hist].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,25);
+  el.innerHTML=sorted.map(s=>{
+    const d=new Date(s.date);
+    const dateStr=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    const mins=Math.round(s.totalSec/60);
+    return `<div class="sess-row">
+      <div><div class="sess-date">${dateStr}</div><div class="sess-meta">${mins} Min · Ø ${s.avgDur.toFixed(1)}s</div></div>
+      <div class="sess-cnt ${s.goalReached?'goal':''}">${s.count}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderHist(){
+  const hist=loadHist();
+  const streaks=computeStreaks(hist);
+  $('h-streak').textContent=streaks.current;
+  $('h-best').textContent=streaks.best;
+  $('h-sessions').textContent=hist.length;
+  const totalAum=hist.reduce((a,s)=>a+s.count,0);
+  const totalSec=hist.reduce((a,s)=>a+s.totalSec,0);
+  const withDur=hist.filter(s=>s.avgDur>0);
+  const avgAll=withDur.length?withDur.reduce((a,s)=>a+s.avgDur,0)/withDur.length:0;
+  $('h-totalaum').textContent=totalAum;
+  $('h-totaltime').textContent=Math.round(totalSec/60);
+  $('h-avgall').textContent=avgAll?avgAll.toFixed(1):'–';
+  renderHeatmap(hist);
+  renderChart(hist);
+  renderList(hist);
+}
+
+/* ===== Tab-Navigation ===== */
+function switchTab(name){
+  ['counter','hist','settings'].forEach(n=>{
+    $('screen-'+n).classList.toggle('active',n===name);
+    $('nav-'+n).classList.toggle('active',n===name);
+  });
+  if(name==='hist') renderHist();
+  if(name==='settings') applySettingsToInputs();
+}
+
+function exportHist(){
+  const hist=loadHist();
+  const blob=new Blob([JSON.stringify(hist,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='aum-verlauf-'+dayKey(new Date())+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function clearHist(){
+  if(!confirm('Gesamten Praxis-Verlauf wirklich löschen? Das kann nicht rückgängig gemacht werden.'))return;
+  localStorage.removeItem(HIST_KEY);
+  renderHist();
+  flash('Verlauf gelöscht','#E24B4A');
 }
 </script>
 </body>
