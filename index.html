@@ -9,60 +9,102 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
-#app{width:100%;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top,20px) 24px env(safe-area-inset-bottom,24px)}
+#app{width:100%;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top,16px) 20px env(safe-area-inset-bottom,20px)}
 
-.topbar{width:100%;display:flex;justify-content:space-between;align-items:center;padding-top:12px}
-.title{font-size:20px;font-weight:500;color:#7080b0}
-.pill{font-size:13px;padding:5px 14px;border-radius:20px;background:#1e1e38;color:#5060a0}
+.topbar{width:100%;display:flex;justify-content:space-between;align-items:center;padding-top:8px}
+.title{font-size:18px;font-weight:500;color:#7080b0}
+.pill{font-size:12px;padding:4px 12px;border-radius:20px;background:#1e1e38;color:#5060a0;transition:background 0.4s,color 0.4s}
 .pill.p{background:#0a2040;color:#60b8f0}
 .pill.c{background:#0a2818;color:#40d090}
 .pill.e{background:#281808;color:#f09050}
+.pill.done{background:#26215C;color:#AFA9EC}
 
-.ring-wrap{position:relative;flex-shrink:0}
-.ring-wrap svg{transform:rotate(-90deg);display:block}
-#rbg{fill:none;stroke:#1e1e38;stroke-width:12}
-#rfill{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset 0.8s linear,stroke 0.4s}
-.rcenter{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
-.rtime{font-size:clamp(32px,8vw,52px);font-weight:500;color:#e8eaff}
-.rsub{font-size:clamp(12px,3vw,16px);color:#505080;margin-top:4px}
+/* dual ring */
+.rings{position:relative;flex-shrink:0}
+.rings svg{transform:rotate(-90deg);display:block}
+#rbg1,#rbg2{fill:none;stroke-width:10}
+#rbg1{stroke:#1e1e38}
+#rbg2{stroke:#161628}
+#rfill1{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 0.8s linear,stroke 0.4s}
+#rfill2{fill:none;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 0.8s linear}
+.rcenter{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:100%}
+.rtime{font-size:clamp(28px,7vw,46px);font-weight:500;color:#e8eaff}
+.rsub{font-size:clamp(11px,2.5vw,14px);color:#505080;margin-top:2px}
+.rtime2{font-size:clamp(13px,3vw,17px);color:#7080b0;margin-top:4px}
 
-.aum-num{font-size:clamp(100px,28vw,160px);font-weight:500;color:#e8eaff;line-height:1;text-align:center}
-.aum-lbl{font-size:clamp(14px,3.5vw,20px);color:#505080;text-align:center;margin-top:-4px}
+/* big count */
+.aum-num{font-size:clamp(88px,24vw,140px);font-weight:500;color:#e8eaff;line-height:1;text-align:center;transition:color 0.4s}
+.aum-num.goal{color:#40d090}
+.aum-lbl{font-size:clamp(13px,3vw,17px);color:#505080;text-align:center;margin-top:-2px}
 
-.dots{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;width:100%;padding:0 8px}
-.d{width:clamp(14px,4vw,20px);height:clamp(14px,4vw,20px);border-radius:50%;background:#1e1e38;transition:background 0.2s,transform 0.15s}
+/* progress bar */
+.prog-wrap{width:100%;background:#1e1e38;border-radius:8px;height:22px;overflow:hidden;position:relative}
+#prog-bar{height:100%;width:0%;background:#534AB7;border-radius:8px;transition:width 0.4s}
+#prog-txt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13px;font-weight:500;color:#e8eaff}
+
+/* stats row */
+.stats{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#181830;border-radius:12px;padding:10px 12px;text-align:center}
+.stat-val{font-size:clamp(16px,4vw,22px);font-weight:500;color:#e8eaff}
+.stat-lbl{font-size:11px;color:#505080;margin-top:2px}
+
+/* dots */
+.dots{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;width:100%;padding:0 4px}
+.d{width:clamp(13px,3.5vw,18px);height:clamp(13px,3.5vw,18px);border-radius:50%;background:#1e1e38;transition:background 0.2s,transform 0.15s}
 .d.done{background:#534AB7}
-.d.active{background:#1D9E75;transform:scale(1.4)}
+.d.singing{background:#1D9E75;transform:scale(1.4)}
+.d.goal{background:#40d090}
 
-#sig{min-height:28px;text-align:center;font-size:clamp(16px,4vw,22px);font-weight:500;color:#f09050}
-.vwrap{width:100%;height:5px;background:#1e1e38;border-radius:3px;overflow:hidden}
-#vbar{height:100%;width:0%;background:#1D9E75;transition:width 0.1s}
+#sig{min-height:26px;text-align:center;font-size:clamp(14px,3.8vw,20px);font-weight:500;color:#f09050}
 
-.btn{width:100%;padding:clamp(18px,5vw,26px);border-radius:18px;border:none;font-size:clamp(18px,5vw,24px);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;-webkit-tap-highlight-color:transparent}
+/* vol bar */
+.vwrap{width:100%;height:6px;background:#1e1e38;border-radius:3px;overflow:hidden}
+#vbar{height:100%;width:0%;border-radius:3px;transition:width 0.08s}
+
+/* 21 overlay */
+#overlay{display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(10,46,24,0.92);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:16px;border-radius:0}
+#overlay.show{display:flex}
+.ov-num{font-size:100px;font-weight:500;color:#40d090;line-height:1}
+.ov-txt{font-size:22px;color:#9FE1CB;text-align:center;padding:0 24px}
+.ov-sub{font-size:14px;color:#085041;text-align:center}
+.ov-btn{padding:14px 40px;border-radius:14px;border:none;background:#40d090;color:#071a10;font-size:17px;font-weight:500;cursor:pointer;margin-top:8px}
+
+.btn{width:100%;padding:clamp(15px,4vw,22px);border-radius:16px;border:none;font-size:clamp(17px,4.5vw,22px);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;-webkit-tap-highlight-color:transparent}
 .btn:active{opacity:0.85}
 .go{background:#40d090;color:#071a10}
 .stop{background:#E24B4A;color:#fff}
 
-.dbg{width:100%;background:#181830;border-radius:14px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:6px 20px}
-.dbg span{font-size:13px;color:#505080}
+.dbg{width:100%;background:#181830;border-radius:12px;padding:9px 14px;display:flex;flex-wrap:wrap;gap:4px 16px}
+.dbg span{font-size:11px;color:#505080}
 .dbg b{color:#8090c0}
 </style>
 </head>
 <body>
-<div id="app">
+<div id="app" style="position:relative">
+
+  <div id="overlay">
+    <div class="ov-num" id="ov-count">21</div>
+    <div class="ov-txt">Praxis abgeschlossen!</div>
+    <div class="ov-sub" id="ov-sub">Du kannst noch weiter singen</div>
+    <button class="ov-btn" onclick="dismissOverlay()">Weiter zählen</button>
+  </div>
+
   <div class="topbar">
     <span class="title">🕉 AUM Zähler</span>
     <span id="pill" class="pill">Bereit</span>
   </div>
 
-  <div class="ring-wrap" id="ringwrap">
+  <div class="rings" id="ringwrap">
     <svg id="ringsvg" viewBox="0 0 220 220">
-      <circle id="rbg" cx="110" cy="110" r="95"/>
-      <circle id="rfill" cx="110" cy="110" r="95" stroke="#1D9E75"/>
+      <circle id="rbg1" cx="110" cy="110" r="95"/>
+      <circle id="rbg2" cx="110" cy="110" r="78"/>
+      <circle id="rfill1" cx="110" cy="110" r="95" stroke="#378ADD"/>
+      <circle id="rfill2" cx="110" cy="110" r="78" stroke="#534AB7"/>
     </svg>
     <div class="rcenter">
       <div id="tdisp" class="rtime">00:00</div>
       <div id="tsub" class="rsub">Gesamt</div>
+      <div id="tdisp2" class="rtime2">–</div>
     </div>
   </div>
 
@@ -71,90 +113,233 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
     <div class="aum-lbl">AUMs gezählt</div>
   </div>
 
+  <div class="prog-wrap">
+    <div id="prog-bar"></div>
+    <div id="prog-txt">0 / 21</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div id="stat-avg" class="stat-val">–</div>
+      <div class="stat-lbl">Ø Dauer (s)</div>
+    </div>
+    <div class="stat">
+      <div id="stat-last" class="stat-val">–</div>
+      <div class="stat-lbl">Letztes AUM (s)</div>
+    </div>
+  </div>
+
   <div class="dots" id="dots"></div>
 
   <div id="sig"></div>
   <div class="vwrap"><div id="vbar"></div></div>
 
-  <button id="btn" class="btn go" onclick="toggle()">
-    ▶ Starten
-  </button>
+  <button id="btn" class="btn go" onclick="toggle()">▶ Starten</button>
 
   <div class="dbg">
-    <span>Lautheit: <b id="dvol">–</b></span>
+    <span>RMS: <b id="dvol">–</b></span>
+    <span>Schwelle: <b id="dthr">–</b></span>
+    <span>Band: <b id="dband">–</b></span>
     <span>Status: <b id="dstate">Idle</b></span>
     <span>Dauer: <b id="ddur">–</b></span>
   </div>
 </div>
 
 <script>
-const PREP=300,CHANT=420,WARN=60,MIND=4,MAXD=35,THR=0.012;
-let CIRC=0;
+const PREP=420, CHANT=420, WARN=60, GOAL=21;
+const MIN_PEAK_DIST=1.5, SMOOTH=8, PROMINENCE=2.5;
+// AUM-Frequenzband: Grundton + erste Obertöne, breit gefasst für tiefe/hohe Stimmen
+const BAND_LO=70, BAND_HI=800;
+const BAND_RATIO_MIN=0.35; // Mindestanteil der Energie, der im AUM-Band liegen muss
+const ADAPT_NOISE_ALPHA=0.02; // wie schnell sich der Rauschboden in Pausen nachjustiert
+let CIRC1=0, CIRC2=0;
 
 function initRing(){
   const svg=document.getElementById('ringsvg');
-  const s=Math.min(window.innerWidth-48, window.innerHeight*0.28);
+  const s=Math.min(window.innerWidth-40, window.innerHeight*0.27);
   svg.style.width=s+'px'; svg.style.height=s+'px';
-  const r=95, c=2*Math.PI*r;
-  CIRC=c;
-  document.getElementById('rfill').style.strokeDasharray=c;
-  document.getElementById('rfill').style.strokeDashoffset=c;
+  CIRC1=2*Math.PI*95; CIRC2=2*Math.PI*78;
+  document.getElementById('rfill1').style.strokeDasharray=CIRC1;
+  document.getElementById('rfill1').style.strokeDashoffset=CIRC1;
+  document.getElementById('rfill2').style.strokeDasharray=CIRC2;
+  document.getElementById('rfill2').style.strokeDashoffset=CIRC2;
 }
 initRing();
 window.addEventListener('resize',initRing);
 
-let run=false,tot=0,csec=0,cnt=0,st='silence',astart=0,lend=0;
+let run=false,tot=0,csec=0,cnt=0,lend=0,goalShown=false;
+let durations=[],avgDur=0;
 let iv=null,actx=null,an=null,ms=null,af=null,da=null,wt=null;
+let freqData=null,binHz=0;
+let inPeak=false,peakMax=0,peakStart=0,peakBandRatioSum=0,peakBandRatioN=0;
+let dynamicThr=0.015,calibrating=false,calibSamples=[];
+let noiseFloor=0.01; // adaptiv nachjustierter Rauschboden während Pausen
+let rmsHistory=[];
+
 const $=id=>document.getElementById(id);
 const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 function ph(){if(!run)return'i';if(tot<PREP)return'p';if(tot<PREP+CHANT)return'c';return'e'}
-function ring(pct,col){const e=$('rfill');e.style.strokeDashoffset=CIRC*(1-pct);e.setAttribute('stroke',col)}
-function dots(){
-  const n=Math.max(21,cnt+2),c=$('dots');
-  c.innerHTML=Array.from({length:Math.min(n,28)},(_,i)=>`<div class="d${i<cnt?' done':''}"></div>`).join('');
+
+function ring1(pct,col){const e=$('rfill1');e.style.strokeDashoffset=CIRC1*(1-Math.min(1,pct));e.setAttribute('stroke',col)}
+function ring2(pct,col){const e=$('rfill2');e.style.strokeDashoffset=CIRC2*(1-Math.min(1,pct));e.setAttribute('stroke',col)}
+
+function updateProgress(){
+  const pct=Math.min(100,Math.round(cnt/GOAL*100));
+  $('prog-bar').style.width=pct+'%';
+  $('prog-bar').style.background=cnt>=GOAL?'#40d090':'#534AB7';
+  $('prog-txt').textContent=cnt+' / '+GOAL+' ('+pct+'%)';
 }
-function flash(m,col){$('sig').textContent=m;$('sig').style.color=col||'#f09050';clearTimeout(wt);wt=setTimeout(()=>$('sig').textContent='',3000)}
+
+function updateStats(dur){
+  if(dur) durations.push(dur);
+  if(durations.length>0){
+    avgDur=durations.reduce((a,b)=>a+b)/durations.length;
+    $('stat-avg').textContent=avgDur.toFixed(1);
+  }
+  if(dur) $('stat-last').textContent=dur.toFixed(1);
+}
+
+function dots(){
+  const n=Math.max(GOAL,cnt+1),c=$('dots');
+  c.innerHTML=Array.from({length:Math.min(n,30)},(_,i)=>{
+    let cl='d';
+    if(i<cnt) cl+= i<GOAL?' done':' goal';
+    return`<div class="${cl}"></div>`;
+  }).join('');
+}
+
+function flash(m,col){$('sig').textContent=m;$('sig').style.color=col||'#f09050';clearTimeout(wt);wt=setTimeout(()=>$('sig').textContent='',3500)}
+
 function beep(ff,dd){
   if(!actx)return;
-  dd.forEach((t,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=ff[i]||ff[0];const s=actx.currentTime+t/1000;g.gain.setValueAtTime(0.3,s);g.gain.exponentialRampToValueAtTime(0.001,s+0.2);o.start(s);o.stop(s+0.22)});
+  dd.forEach((t,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=ff[i]||ff[0];const s=actx.currentTime+t/1000;g.gain.setValueAtTime(0.35,s);g.gain.exponentialRampToValueAtTime(0.001,s+0.28);o.start(s);o.stop(s+0.3)});
 }
-function rms(){
+
+function dismissOverlay(){
+  $('overlay').classList.remove('show');
+}
+
+function showGoal(){
+  if(goalShown)return;
+  goalShown=true;
+  $('ov-count').textContent=cnt;
+  $('ov-sub').textContent='Du hast '+cnt+' AUMs gesungen – wunderbar!';
+  $('overlay').classList.add('show');
+  beep([523,659,784,1047],[0,300,600,900]);
+  $('big').classList.add('goal');
+}
+
+function getRMS(){
   if(!an||!da)return 0;
   an.getByteTimeDomainData(da);
   let s=0;for(let i=0;i<da.length;i++){const v=(da[i]-128)/128;s+=v*v;}
   return Math.sqrt(s/da.length);
 }
+function smoothRMS(v){rmsHistory.push(v);if(rmsHistory.length>SMOOTH)rmsHistory.shift();return rmsHistory.reduce((a,b)=>a+b)/rmsHistory.length;}
+
+// Anteil der Energie im AUM-typischen Frequenzband (BAND_LO–BAND_HI Hz)
+// relativ zur Gesamtenergie des Spektrums. Filtert Atem-Rauschen (sehr breitbandig,
+// kaum Tonhöhe) und hochfrequente Störgeräusche (Klicken, Rascheln) heraus.
+function getBandRatio(){
+  if(!an||!freqData)return 0;
+  an.getFloatFrequencyData(freqData);
+  const loBin=Math.max(1,Math.floor(BAND_LO/binHz));
+  const hiBin=Math.min(freqData.length-1,Math.ceil(BAND_HI/binHz));
+  let bandLin=0,totalLin=0;
+  for(let i=1;i<freqData.length;i++){
+    // dB -> lineare Pseudo-Energie (Referenz irrelevant, nur Verhältnis zählt)
+    const lin=Math.pow(10,freqData[i]/20);
+    totalLin+=lin;
+    if(i>=loBin&&i<=hiBin) bandLin+=lin;
+  }
+  if(totalLin<=0)return 0;
+  return bandLin/totalLin;
+}
+
 function aloop(){
-  if(!run)return;
-  const v=rms();
-  $('vbar').style.width=Math.min(100,v/THR*50)+'%';
-  $('dvol').textContent=v.toFixed(4);
-  const p=ph();
-  if(p==='c'||p==='e'){
+  if(!run){af=requestAnimationFrame(aloop);return;}
+  const raw=getRMS();
+  const rms=smoothRMS(raw);
+  const bandRatio=getBandRatio();
+  const pct=Math.min(100,rms/Math.max(dynamicThr,0.001)*40);
+  $('vbar').style.width=pct+'%';
+  $('vbar').style.background=inPeak?'#1D9E75':'#534AB7';
+  $('dvol').textContent=rms.toFixed(4);
+  $('dthr').textContent=dynamicThr.toFixed(4);
+  $('dband').textContent=(bandRatio*100).toFixed(0)+'%';
+
+  if(calibrating){
+    calibSamples.push(rms);
+    if(calibSamples.length>180){
+      calibrating=false;
+      const mx=Math.max(...calibSamples);
+      const avg=calibSamples.reduce((a,b)=>a+b)/calibSamples.length;
+      dynamicThr=Math.max(mx*PROMINENCE,0.008);
+      noiseFloor=avg;
+      flash('Kalibriert ✓  Schwelle: '+dynamicThr.toFixed(4),'#60b8f0');
+    }
+  }
+
+  // Count AUMs from start (including prep phase)
+  if(run && !calibrating){
     const now=performance.now();
-    if(st==='silence'){
-      if(v>THR){st='singing';astart=now;$('dstate').textContent='Singt'}
+    if(!inPeak){
+      // Kontinuierliche Nachjustierung des Rauschbodens während Pausen
+      // (langsamer exponentieller Gleitwert -> reagiert auf Umgebung/Ermüdung,
+      // ohne durch einzelne kurze Ausreißer aus der Bahn zu geraten)
+      if(rms<dynamicThr*0.5){
+        noiseFloor=noiseFloor*(1-ADAPT_NOISE_ALPHA)+rms*ADAPT_NOISE_ALPHA;
+        dynamicThr=Math.max(noiseFloor*PROMINENCE,0.008);
+      }
+      if(rms>dynamicThr){
+        inPeak=true;peakMax=rms;peakStart=now;
+        peakBandRatioSum=bandRatio;peakBandRatioN=1;
+        $('dstate').textContent='Singt';
+      }
     } else {
-      if(v<=THR){
-        const dur=(now-astart)/1000;$('ddur').textContent=dur.toFixed(1)+'s';
-        if(dur>=MIND&&dur<=MAXD){
-          cnt++;lend=now;$('big').textContent=cnt;dots();
-          if(cnt===21){beep([523,659,784],[0,300,600]);flash('Ziel erreicht! 21 AUMs ','#40d090')}
-          else flash('AUM #'+cnt,'#40d090');
+      if(rms>peakMax)peakMax=rms;
+      peakBandRatioSum+=bandRatio;peakBandRatioN++;
+      if(rms<dynamicThr*0.5){
+        const dur=(now-peakStart)/1000;
+        const avgBandRatio=peakBandRatioN>0?peakBandRatioSum/peakBandRatioN:0;
+        inPeak=false;
+        $('ddur').textContent=dur.toFixed(1)+'s';
+        $('dband').textContent=(avgBandRatio*100).toFixed(0)+'%';
+        const bandOk=avgBandRatio>=BAND_RATIO_MIN;
+        if(dur>=0.8&&dur<=10&&bandOk){
+          const since=(now-lend)/1000;
+          if(since>MIN_PEAK_DIST||lend===0){
+            cnt++;lend=now;
+            $('big').textContent=cnt;
+            updateStats(dur);
+            updateProgress();
+            dots();
+            if(cnt===GOAL) showGoal();
+            else if(cnt>GOAL) flash('AUM #'+cnt+' — Bonus!','#AFA9EC');
+            else flash('AUM #'+cnt,'#40d090');
+          }
+        } else if(dur>=0.8&&dur<=10&&!bandOk){
+          flash('Ton ignoriert (kein AUM-Klang)','#7080b0');
         }
-        st='silence';$('dstate').textContent='Pause';
+        peakMax=0;peakBandRatioSum=0;peakBandRatioN=0;$('dstate').textContent='Pause';
       }
     }
   }
   af=requestAnimationFrame(aloop);
 }
+
 async function mic(){
   try{
     actx=new(window.AudioContext||window.webkitAudioContext)();
     ms=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
     const src=actx.createMediaStreamSource(ms);
-    an=actx.createAnalyser();an.fftSize=512;da=new Uint8Array(an.fftSize);
-    src.connect(an);aloop();
+    an=actx.createAnalyser();an.fftSize=1024;da=new Uint8Array(an.fftSize);
+    freqData=new Float32Array(an.frequencyBinCount);
+    binHz=actx.sampleRate/an.fftSize;
+    src.connect(an);
+    calibrating=true;calibSamples=[];
+    flash('Kalibriere... kurz still bleiben','#60b8f0');
+    af=requestAnimationFrame(aloop);
   }catch(e){flash('Mikrofon: '+e.message,'#E24B4A')}
 }
 function stopaudio(){
@@ -163,33 +348,62 @@ function stopaudio(){
   if(actx){actx.close();actx=null}
   an=null;da=null;
 }
+
 function tick(){
   if(!run)return;
-  tot++;const p=ph();
+  tot++;
+  const p=ph();
   if(p==='c')csec++;
   $('tdisp').textContent=fmt(tot);
-  const pl=$('pill');
-  if(p==='p'){pl.textContent='Vorbereitung';pl.className='pill p';ring(tot/PREP,'#378ADD');$('tsub').textContent='Vorbereitung';if(PREP-tot===0)flash('Jetzt singen!','#40d090')}
-  else if(p==='c'){pl.textContent='Chanten';pl.className='pill c';ring(csec/CHANT,'#1D9E75');$('tsub').textContent='Chanten';
-    if(st==='silence'&&lend>0&&(performance.now()-lend)/1000>WARN&&cnt<21){lend=performance.now();beep([880,880,880],[0,250,500]);flash('Weiter singen! Zu wenige AUMs','#f09050')}
+
+  // Inner ring: chant countdown (7 min)
+  if(p==='p'){
+    const remPrep=PREP-tot;
+    $('tdisp2').textContent='Chant in '+fmt(remPrep);
+    ring1(tot/PREP,'#378ADD');
+    ring2(cnt/GOAL,'#534AB7');
+    $('pill').textContent='Vorbereitung';$('pill').className='pill p';
+    $('tsub').textContent='Gesamt';
+    if(remPrep===0)flash('Jetzt singen!','#40d090');
+  } else if(p==='c'){
+    const remChant=CHANT-csec;
+    $('tdisp2').textContent='Chant: '+fmt(remChant);
+    ring1(csec/CHANT,'#1D9E75');
+    ring2(cnt/GOAL,'#534AB7');
+    $('pill').textContent='Chanten';$('pill').className='pill c';
+    $('tsub').textContent='Chant-Phase';
+    if(!inPeak&&lend>0&&(performance.now()-lend)/1000>WARN&&cnt<GOAL){
+      lend=performance.now();beep([880,880,880],[0,250,500]);flash('Weiter singen! Erst '+cnt+'/'+GOAL,'#f09050');
+    }
+    if(csec===CHANT&&cnt<GOAL){beep([880,880,880],[0,250,500]);flash('Chant-Zeit um! Erst '+cnt+'/'+GOAL,'#f09050');}
   } else {
-    pl.textContent='Cooldown';pl.className='pill e';ring(1,'#D85A30');$('tsub').textContent='Nachklang';
-    if(tot===PREP+CHANT&&cnt<21){beep([880,880,880],[0,250,500]);flash('Weiter singen!','#f09050')}
+    $('tdisp2').textContent='Bonus: '+fmt(tot-PREP-CHANT);
+    ring1(1,'#D85A30');
+    ring2(cnt/GOAL,'#534AB7');
+    $('pill').textContent=cnt>=GOAL?'Fertig ✓':'Cooldown';
+    $('pill').className=cnt>=GOAL?'pill done':'pill e';
+    $('tsub').textContent='Nachklang';
   }
 }
+
 function toggle(){
   const b=$('btn');
   if(!run){
-    run=true;tot=0;csec=0;cnt=0;st='silence';astart=0;lend=0;
-    $('big').textContent='0';$('sig').textContent='';$('dstate').textContent='Wartet';
-    dots();mic();iv=setInterval(tick,1000);
+    run=true;tot=0;csec=0;cnt=0;lend=0;goalShown=false;durations=[];avgDur=0;
+    inPeak=false;peakMax=0;peakBandRatioSum=0;peakBandRatioN=0;rmsHistory=[];
+    $('big').textContent='0';$('big').classList.remove('goal');
+    $('sig').textContent='';$('dstate').textContent='Wartet';
+    $('stat-avg').textContent='–';$('stat-last').textContent='–';
+    $('overlay').classList.remove('show');
+    updateProgress();dots();mic();iv=setInterval(tick,1000);
     b.className='btn stop';b.innerHTML='⏹ Stoppen';
   } else {
     run=false;clearInterval(iv);stopaudio();
     b.className='btn go';b.innerHTML='▶ Starten';
     $('pill').textContent='Beendet';$('pill').className='pill';
-    ring(0,'#1D9E75');$('tsub').textContent='Beendet';$('dstate').textContent='Idle';
-    flash('Beendet – '+cnt+' AUMs','#40d090');
+    ring1(0,'#1D9E75');$('tsub').textContent='Beendet';$('dstate').textContent='Idle';
+    $('tdisp2').textContent='–';
+    flash('Beendet – '+cnt+' AUMs ('+Math.round(cnt/GOAL*100)+'%)','#40d090');
   }
 }
 </script>
