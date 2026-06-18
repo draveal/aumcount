@@ -4,64 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>AUM Zähler</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
 #app{width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;position:relative}
 
-/* tab screens */
-.screen{display:none;flex-direction:column;align-items:center;justify-content:space-between;flex:1;overflow-y:auto;padding:0 16px max(12px,env(safe-area-inset-bottom,12px))}
-.screen.active{display:flex}
-
-/* bottom nav */
-.topnav{flex-shrink:0;width:100%;display:flex;align-items:center;gap:6px;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;background:rgba(18,18,42,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);box-shadow:0 2px 16px rgba(0,0,0,0.5);z-index:30}
-.navbtn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:#505080;display:flex;flex-direction:row;align-items:center;gap:5px;font-size:12px;font-weight:600;cursor:pointer;padding:8px 14px;border-radius:12px;-webkit-tap-highlight-color:transparent;transition:background .2s,color .2s,border-color .2s;flex:1;justify-content:center;letter-spacing:0.01em}
-.navbtn .navicon{font-size:16px;line-height:1}
-.navbtn.active{background:linear-gradient(135deg,#3a2e90,#534AB7);color:#fff;border-color:rgba(83,74,183,0.4);box-shadow:0 2px 10px rgba(83,74,183,0.4)}
-
-/* ── Unified professional header (all three tabs) ── */
-.screen-header{
-  position:sticky;top:0;z-index:10;
-  width:calc(100% + 32px);margin-left:-16px;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:calc(env(safe-area-inset-top,10px) + 10px) 20px 11px;
-  background:rgba(18,18,42,0.85);
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  box-shadow:0 2px 20px rgba(0,0,0,0.35);
+/* ── TOP CHROME: header + segment tabs ── */
+#topchrome{
   flex-shrink:0;
+  background:rgba(14,14,34,0.96);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  box-shadow:0 2px 24px rgba(0,0,0,0.5);
+  padding-top:env(safe-area-inset-top,0px);
+  position:relative;z-index:20;
 }
-.screen-header::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(83,74,183,0.08) 0%,transparent 60%);
-  pointer-events:none;
+#topbar-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 18px 6px;
 }
-.header-left{display:flex;align-items:center;gap:10px}
-.header-icon{
-  width:32px;height:32px;border-radius:9px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;flex-shrink:0;
+.app-brand{display:flex;align-items:center;gap:9px}
+.brand-icon{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,#2a2060,#3a2e90);
+  box-shadow:0 0 0 1px rgba(83,74,183,0.4),0 2px 8px rgba(83,74,183,0.3);
+  display:flex;align-items:center;justify-content:center;font-size:15px;
 }
-.header-icon.counter{background:linear-gradient(135deg,#1a1a3e,#252550);box-shadow:0 0 0 1px rgba(83,74,183,0.3)}
-.header-icon.history{background:linear-gradient(135deg,#0e2635,#162840);box-shadow:0 0 0 1px rgba(55,138,221,0.25)}
-.header-icon.settings{background:linear-gradient(135deg,#1e1830,#251e40);box-shadow:0 0 0 1px rgba(160,150,220,0.2)}
-.header-title-group{display:flex;flex-direction:column;gap:1px}
-.header-title{font-size:15px;font-weight:600;color:#e8eaff;letter-spacing:-0.01em}
-.header-sub{font-size:10px;color:#505080;font-weight:400;letter-spacing:0.02em;text-transform:uppercase}
-.header-right{display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+.brand-name{font-size:14px;font-weight:700;color:#e8eaff;letter-spacing:-0.01em}
+.brand-sub{font-size:9px;color:#4a4a7a;letter-spacing:0.05em;text-transform:uppercase;margin-top:1px}
+#pill{font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px;letter-spacing:0.03em;
+  background:#1e1e38;color:#5060a0;border:1px solid rgba(255,255,255,0.06);
+  transition:background 0.35s,color 0.35s,border-color 0.35s;white-space:nowrap}
+#pill.p{background:#0a2040;color:#60b8f0;border-color:rgba(96,184,240,0.25)}
+#pill.c{background:#0a2818;color:#40d090;border-color:rgba(64,208,144,0.25)}
+#pill.e{background:#281808;color:#f09050;border-color:rgba(240,144,80,0.25)}
+#pill.done{background:#1e1a45;color:#AFA9EC;border-color:rgba(175,169,236,0.25)}
 
-/* Status pill – counter tab */
-.pill{font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px;letter-spacing:0.03em;
-  background:#1e1e38;color:#5060a0;border:1px solid rgba(255,255,255,0.05);
-  transition:background 0.4s,color 0.4s,border-color 0.4s}
-.pill.p{background:#0a2040;color:#60b8f0;border-color:rgba(96,184,240,0.2)}
-.pill.c{background:#0a2818;color:#40d090;border-color:rgba(64,208,144,0.2)}
-.pill.e{background:#281808;color:#f09050;border-color:rgba(240,144,80,0.2)}
-.pill.done{background:#1e1a45;color:#AFA9EC;border-color:rgba(175,169,236,0.2)}
+#segtabs{
+  display:flex;gap:6px;padding:0 14px 10px;
+}
+.segtab{
+  flex:1;padding:8px 6px;border:none;border-radius:11px;
+  background:rgba(255,255,255,0.04);color:#505080;
+  font-size:12px;font-weight:600;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  transition:background .2s,color .2s,box-shadow .2s;
+  -webkit-tap-highlight-color:transparent;
+  letter-spacing:0.01em;
+}
+.segtab .tabicon{font-size:16px;line-height:1}
+.segtab.active{
+  background:linear-gradient(135deg,#3a2e90,#534AB7);
+  color:#fff;
+  box-shadow:0 2px 12px rgba(83,74,183,0.45),0 0 0 1px rgba(83,74,183,0.3);
+}
 
-/* dual ring */
+/* ── SCREENS ── */
+.screen{display:none;flex-direction:column;align-items:center;justify-content:space-between;flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 16px max(10px,env(safe-area-inset-bottom,10px))}
+.screen.active{display:flex}
+.screen{-webkit-overflow-scrolling:touch}
+
+/* ── ZÄHLER screen ── */
+.counter-top{width:100%;display:flex;flex-direction:column;gap:8px;padding-bottom:4px}
+
+#btn{width:100%;padding:15px;border-radius:16px;border:none;font-size:17px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;-webkit-tap-highlight-color:transparent;letter-spacing:0.01em;transition:opacity .15s,transform .1s}
+#btn:active{opacity:0.82;transform:scale(0.98)}
+#btn.go{background:linear-gradient(135deg,#2db87a,#40d090);color:#071a10;box-shadow:0 4px 20px rgba(64,208,144,0.35)}
+#btn.stop{background:linear-gradient(135deg,#c93535,#E24B4A);color:#fff;box-shadow:0 4px 20px rgba(226,75,74,0.35)}
+
 .rings{position:relative;flex-shrink:0}
 .rings svg{transform:rotate(-90deg);display:block}
 #rbg1,#rbg2{fill:none;stroke-width:10}
@@ -70,67 +82,67 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 #rfill1{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 0.8s linear,stroke 0.4s}
 #rfill2{fill:none;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 0.8s linear}
 .rcenter{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:100%}
-.rtime{font-size:clamp(22px,5.5vw,38px);font-weight:500;color:#e8eaff}
-.rsub{font-size:clamp(10px,2.2vw,13px);color:#505080;margin-top:1px}
-.rtime2{font-size:clamp(11px,2.6vw,15px);color:#7080b0;margin-top:2px}
+.rtime{font-size:clamp(20px,5vw,34px);font-weight:600;color:#e8eaff}
+.rsub{font-size:clamp(10px,2.2vw,12px);color:#505080;margin-top:1px}
+.rtime2{font-size:clamp(10px,2.4vw,14px);color:#7080b0;margin-top:2px}
 
-/* big count */
-.aum-num{font-size:clamp(64px,17vw,108px);font-weight:500;color:#e8eaff;line-height:1;text-align:center;transition:color 0.4s}
+.aum-num{font-size:clamp(60px,16vw,100px);font-weight:500;color:#e8eaff;line-height:1;text-align:center;transition:color 0.4s}
 .aum-num.goal{color:#40d090}
-.aum-lbl{font-size:clamp(12px,2.6vw,15px);color:#505080;text-align:center;margin-top:-2px}
+.aum-lbl{font-size:clamp(11px,2.5vw,14px);color:#505080;text-align:center;margin-top:-2px}
 
-/* progress bar */
-.prog-wrap{width:100%;background:#1e1e38;border-radius:8px;height:18px;overflow:hidden;position:relative}
+.prog-wrap{width:100%;background:#1e1e38;border-radius:8px;height:17px;overflow:hidden;position:relative}
 #prog-bar{height:100%;width:0%;background:#534AB7;border-radius:8px;transition:width 0.4s}
-#prog-txt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;font-weight:500;color:#e8eaff}
+#prog-txt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:600;color:#e8eaff;white-space:nowrap}
 
-/* stats row */
 .stats{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .stat{background:#181830;border-radius:12px;padding:7px 10px;text-align:center}
-.stat-val{font-size:clamp(15px,3.6vw,20px);font-weight:500;color:#e8eaff}
+.stat-val{font-size:clamp(14px,3.4vw,19px);font-weight:600;color:#e8eaff}
 .stat-lbl{font-size:10px;color:#505080;margin-top:1px}
 
-/* dots */
-.dots{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;width:100%;padding:0 4px}
-.d{width:clamp(11px,3vw,16px);height:clamp(11px,3vw,16px);border-radius:50%;background:#1e1e38;transition:background 0.2s,transform 0.15s}
+.dots{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;width:100%;padding:0 4px}
+.d{width:clamp(9px,2.6vw,14px);height:clamp(9px,2.6vw,14px);border-radius:50%;background:#1e1e38;transition:background 0.2s,transform 0.15s;flex-shrink:0}
 .d.done{background:#534AB7}
-.d.singing{background:#1D9E75;transform:scale(1.4)}
+.d.singing{background:#1D9E75;transform:scale(1.35)}
 .d.goal{background:#40d090}
+.dots-overflow{font-size:11px;color:#505080;text-align:center;width:100%;margin-top:2px}
 
-#sig{min-height:20px;text-align:center;font-size:clamp(12px,3.2vw,17px);font-weight:500;color:#f09050}
+#sig{min-height:18px;text-align:center;font-size:clamp(11px,3vw,15px);font-weight:500;color:#f09050}
 
-/* vol bar */
-.vwrap{width:100%;height:5px;background:#1e1e38;border-radius:3px;overflow:hidden}
+.vwrap{width:100%;height:4px;background:#1e1e38;border-radius:3px;overflow:hidden}
 #vbar{height:100%;width:0%;border-radius:3px;transition:width 0.08s}
 
-/* dezenter Ziel-erreicht Hinweis, kein Blocking-Overlay, kein Tap nötig */
 #goalbanner{max-height:0;overflow:hidden;width:100%;background:#0a2818;border-radius:14px;text-align:center;transition:max-height 0.5s ease,opacity 0.5s ease,margin 0.5s ease;opacity:0;margin-top:0}
-#goalbanner.show{max-height:90px;opacity:1;margin-top:8px}
-#goalbanner .gb-inner{padding:10px 14px}
-.gb-txt{font-size:14px;font-weight:500;color:#40d090}
-.gb-sub{font-size:11px;color:#3a8f6f;margin-top:2px}
+#goalbanner.show{max-height:80px;opacity:1;margin-top:6px}
+#goalbanner .gb-inner{padding:9px 14px}
+.gb-txt{font-size:13px;font-weight:600;color:#40d090}
+.gb-sub{font-size:10px;color:#3a8f6f;margin-top:2px}
 
-.btn{width:100%;padding:clamp(11px,3.2vw,17px);border-radius:16px;border:none;font-size:clamp(15px,3.8vw,19px);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;-webkit-tap-highlight-color:transparent}
-.btn:active{opacity:0.85}
-.go{background:#40d090;color:#071a10}
-.stop{background:#E24B4A;color:#fff}
-
-.dbg{width:100%;background:#181830;border-radius:12px;padding:7px 12px;display:flex;flex-wrap:wrap;gap:3px 14px}
-.dbg span{font-size:10px;color:#505080}
+/* debug – two rows now */
+.dbg{width:100%;background:#181830;border-radius:10px;padding:6px 12px;display:flex;flex-wrap:wrap;gap:2px 12px}
+.dbg span{font-size:9px;color:#505080}
 .dbg b{color:#8090c0}
+/* new beta debug highlight */
+.dbg b.hi{color:#60d0a0}
+/* phase badge */
+.phase-badge{display:inline-block;font-size:13px;font-weight:800;border-radius:6px;padding:1px 7px;letter-spacing:0.04em;transition:background .2s,color .2s}
+.phase-badge.A{background:#1a2a40;color:#60b8f0}
+.phase-badge.U{background:#2a1a40;color:#b060f0}
+.phase-badge.M{background:#1a3020;color:#40d090}
+.phase-badge.q{background:#281808;color:#f09050}
 
-/* history tab content */
-.hist-section{width:100%;margin-top:14px}
-.hist-h{font-size:11px;color:#505080;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+/* ── VERLAUF screen ── */
+.hist-toolbar{width:100%;display:flex;justify-content:flex-end;padding:4px 0 6px}
+.viewtog{display:flex;gap:4px;background:#181830;border-radius:20px;padding:3px;border:1px solid rgba(255,255,255,0.06)}
+.viewtog button{font-size:11px;padding:5px 13px;border-radius:16px;border:none;background:transparent;color:#505080;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s,color .2s;letter-spacing:0.02em}
+.viewtog button.active{background:#534AB7;color:#fff;box-shadow:0 1px 6px rgba(83,74,183,0.5)}
+
+.hist-section{width:100%;margin-top:12px}
+.hist-h{font-size:10px;color:#505080;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;font-weight:600}
 
 .streakrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .streak-card{background:#181830;border-radius:12px;padding:9px 8px;text-align:center}
-.streak-val{font-size:20px;font-weight:500;color:#e8eaff}
+.streak-val{font-size:20px;font-weight:600;color:#e8eaff}
 .streak-lbl{font-size:9px;color:#505080;margin-top:1px}
-
-.viewtog{display:flex;gap:4px;background:#12122a;border-radius:22px;padding:3px;border:1px solid rgba(255,255,255,0.07)}
-.viewtog button{font-size:11px;padding:5px 12px;border-radius:18px;border:none;background:transparent;color:#505080;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s,color .2s;letter-spacing:0.02em}
-.viewtog button.active{background:#534AB7;color:#fff;box-shadow:0 1px 6px rgba(83,74,183,0.5)}
 
 .heatmap-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .heatmap{display:grid;grid-template-columns:repeat(13,26px);grid-template-rows:18px repeat(7,26px);grid-auto-flow:column;gap:3px;justify-content:center;margin:0 auto}
@@ -153,64 +165,69 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .sess-row{background:#181830;border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center}
 .sess-date{font-size:12px;color:#e8eaff}
 .sess-meta{font-size:10px;color:#505080;margin-top:1px}
-.sess-cnt{font-size:15px;font-weight:500;color:#e8eaff}
+.sess-cnt{font-size:15px;font-weight:600;color:#e8eaff}
 .sess-cnt.goal{color:#40d090}
 
-.hist-actions{display:flex;gap:8px;margin-top:14px;margin-bottom:10px}
-.hist-btn{flex:1;padding:10px;border-radius:12px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:#1e1e38;color:#8090c0}
+.hist-actions{display:flex;gap:8px;margin-top:14px;margin-bottom:6px}
+.hist-btn{flex:1;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.05);font-size:12px;font-weight:600;cursor:pointer;background:#181830;color:#8090c0;-webkit-tap-highlight-color:transparent}
 .hist-btn.danger{color:#E24B4A}
 
-/* settings tab */
+/* ── EINSTELLUNGEN screen ── */
 .set-section{width:100%;margin-top:14px}
-.set-h{font-size:11px;color:#505080;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+.set-h{font-size:10px;color:#505080;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;font-weight:600}
 .set-card{background:#181830;border-radius:14px;padding:2px 14px}
-.set-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1e1e38}
+.set-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
 .set-row:last-child{border-bottom:none}
-.set-lbl{font-size:13px;color:#e8eaff}
-.set-sub{font-size:10px;color:#505080;margin-top:1px}
-.set-input{width:60px;text-align:center;background:#0f0f24;border:1px solid #2a2a4a;border-radius:8px;color:#e8eaff;font-size:13px;padding:5px 4px}
+.set-lbl{font-size:13px;color:#e8eaff;font-weight:500}
+.set-sub{font-size:10px;color:#505080;margin-top:2px}
+.set-input{width:64px;text-align:center;background:#0f0f24;border:1px solid #2a2a4a;border-radius:9px;color:#e8eaff;font-size:13px;padding:6px 4px;font-weight:600}
 .set-input:focus{outline:none;border-color:#534AB7}
 
-.toggle{width:44px;height:25px;border-radius:14px;background:#2a2a4a;position:relative;cursor:pointer;flex-shrink:0;transition:background 0.25s}
+.toggle{width:44px;height:26px;border-radius:14px;background:#2a2a4a;position:relative;cursor:pointer;flex-shrink:0;transition:background 0.25s}
 .toggle.on{background:#40d090}
-.toggle .knob{width:19px;height:19px;border-radius:50%;background:#e8eaff;position:absolute;top:3px;left:3px;transition:left 0.25s}
-.toggle.on .knob{left:22px}
+.toggle .knob{width:20px;height:20px;border-radius:50%;background:#e8eaff;position:absolute;top:3px;left:3px;transition:left 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.4)}
+.toggle.on .knob{left:21px}
 
-.set-save{width:100%;padding:12px;border-radius:14px;border:none;background:#534AB7;color:#fff;font-size:14px;font-weight:500;cursor:pointer;margin-top:14px}
-.set-note{font-size:10px;color:#505080;text-align:center;margin-top:8px;padding-bottom:6px}
+/* beta badge on toggle row */
+.beta-badge{font-size:8px;font-weight:700;background:#3a2e90;color:#AFA9EC;border-radius:4px;padding:1px 5px;letter-spacing:0.04em;margin-left:6px;vertical-align:middle}
+
+.set-save{width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#3a2e90,#534AB7);color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:16px;box-shadow:0 3px 14px rgba(83,74,183,0.4);-webkit-tap-highlight-color:transparent}
+.set-save:active{opacity:0.85}
+.set-note{font-size:10px;color:#505080;text-align:center;margin-top:8px;padding-bottom:10px}
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ===== TOP NAVIGATION ===== -->
-  <div class="topnav">
-    <button class="navbtn active" id="nav-counter" onclick="switchTab('counter')">
-      <span class="navicon">🕉</span><span>Zähler</span>
-    </button>
-    <button class="navbtn" id="nav-hist" onclick="switchTab('hist')">
-      <span class="navicon">📊</span><span>Verlauf</span>
-    </button>
-    <button class="navbtn" id="nav-settings" onclick="switchTab('settings')">
-      <span class="navicon">⚙</span><span>Einst.</span>
-    </button>
-  </div>
-
-  <!-- ===== TAB 1: ZÄHLER ===== -->
-  <div class="screen active" id="screen-counter">
-
-    <div class="screen-header">
-      <div class="header-left">
-        <div class="header-icon counter">🕉</div>
-        <div class="header-title-group">
-          <span class="header-title">AUM Zähler</span>
-          <span class="header-sub">Mantra-Praxis</span>
+  <!-- ═══════════ TOP CHROME ═══════════ -->
+  <div id="topchrome">
+    <div id="topbar-row">
+      <div class="app-brand">
+        <div class="brand-icon">🕉</div>
+        <div>
+          <div class="brand-name">AUM Zähler</div>
+          <div class="brand-sub">Mantra-Praxis</div>
         </div>
       </div>
-      <div class="header-right">
-        <span id="pill" class="pill">Bereit</span>
-      </div>
+      <span id="pill">Bereit</span>
     </div>
+    <div id="segtabs">
+      <button class="segtab active" id="nav-counter" onclick="switchTab('counter')">
+        <span class="tabicon">🕉</span><span>Zähler</span>
+      </button>
+      <button class="segtab" id="nav-hist" onclick="switchTab('hist')">
+        <span class="tabicon">📊</span><span>Verlauf</span>
+      </button>
+      <button class="segtab" id="nav-settings" onclick="switchTab('settings')">
+        <span class="tabicon">⚙️</span><span>Einstellungen</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════ TAB 1: ZÄHLER ═══════════ -->
+  <div class="screen active" id="screen-counter">
+
+    <button id="btn" class="go" onclick="toggle()">▶ Starten</button>
 
     <div class="rings" id="ringwrap">
       <svg id="ringsvg" viewBox="0 0 220 220">
@@ -255,36 +272,37 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
     </div>
 
     <div class="dots" id="dots"></div>
+    <div class="dots-overflow" id="dots-overflow"></div>
 
     <div id="sig"></div>
     <div class="vwrap"><div id="vbar"></div></div>
 
-    <button id="btn" class="btn go" onclick="toggle()">▶ Starten</button>
-
+    <!-- debug panel – row 1: original fields, row 2: new beta fields -->
     <div class="dbg">
       <span>RMS: <b id="dvol">–</b></span>
       <span>Schwelle: <b id="dthr">–</b></span>
       <span>Band: <b id="dband">–</b></span>
       <span>Status: <b id="dstate">Idle</b></span>
       <span>Dauer: <b id="ddur">–</b></span>
+      <!-- new fields (only meaningful when beta mode on) -->
+      <span id="dbg-beta-row" style="width:100%;display:flex;flex-wrap:wrap;gap:2px 12px;padding-top:2px;border-top:1px solid rgba(255,255,255,0.04);margin-top:2px">
+        <span>f₀: <b id="df0" class="hi">–</b> Hz</span>
+        <span>Oberton: <b id="dovertone" class="hi">–</b></span>
+        <span>M-Hum: <b id="dmhum" class="hi">–</b>%</span>
+        <span>Grundton: <b id="dgt" class="hi">–</b>%</span>
+        <span>Modus: <b id="dmode" class="hi">–</b></span>
+        <span>Phase: <span id="dphase" class="phase-badge q">?</span></span>
+        <span>Zeitleiste: <b id="dtimeline" class="hi" style="font-size:9px;letter-spacing:0.05em">–</b></span>
+      </span>
     </div>
   </div>
 
-  <!-- ===== TAB 2: VERLAUF ===== -->
+  <!-- ═══════════ TAB 2: VERLAUF ═══════════ -->
   <div class="screen" id="screen-hist">
-    <div class="screen-header">
-      <div class="header-left">
-        <div class="header-icon history">📊</div>
-        <div class="header-title-group">
-          <span class="header-title">Verlauf</span>
-          <span class="header-sub">Praxis-Statistik</span>
-        </div>
-      </div>
-      <div class="header-right">
-        <div class="viewtog">
-          <button id="hv-days" class="active" onclick="setHistView('days')">13 KW</button>
-          <button id="hv-weeks" onclick="setHistView('weeks')">Woche</button>
-        </div>
+    <div class="hist-toolbar">
+      <div class="viewtog">
+        <button id="hv-days" class="active" onclick="setHistView('days')">13 KW</button>
+        <button id="hv-weeks" onclick="setHistView('weeks')">Woche</button>
       </div>
     </div>
 
@@ -330,17 +348,8 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
     </div>
   </div>
 
-  <!-- ===== TAB 3: EINSTELLUNGEN ===== -->
+  <!-- ═══════════ TAB 3: EINSTELLUNGEN ═══════════ -->
   <div class="screen" id="screen-settings">
-    <div class="screen-header">
-      <div class="header-left">
-        <div class="header-icon settings">⚙️</div>
-        <div class="header-title-group">
-          <span class="header-title">Einstellungen</span>
-          <span class="header-sub">Praxis konfigurieren</span>
-        </div>
-      </div>
-    </div>
 
     <div class="set-section">
       <div class="set-h">Zeiten</div>
@@ -354,7 +363,7 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
           <input type="number" min="1" max="120" class="set-input" id="set-chant" value="7">
         </div>
         <div class="set-row">
-          <div><div class="set-lbl">Ziel-Anzahl</div><div class="set-sub">AUMs pro Praxis</div></div>
+          <div><div class="set-lbl">Ziel-Anzahl</div><div class="set-sub">AUMs pro Praxis (z.B. 21, 54, 108, 216)</div></div>
           <input type="number" min="1" max="500" class="set-input" id="set-goal" value="21">
         </div>
         <div class="set-row">
@@ -382,35 +391,95 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
       </div>
     </div>
 
+    <!-- NEW: Beta detection section -->
+    <div class="set-section">
+      <div class="set-h">Erweiterte Erkennung <span class="beta-badge">BETA</span></div>
+      <div class="set-card">
+        <div class="set-row">
+          <div>
+            <div class="set-lbl">Schärfere Frequenzfilter <span class="beta-badge">BETA</span></div>
+            <div class="set-sub">Grundton 110–220 Hz · M-Hum 70–150 Hz · Obertoncheck</div>
+          </div>
+          <div class="toggle" id="tog-beta" onclick="toggleSetting('beta')"><div class="knob"></div></div>
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-lbl">Mindest-Obertonscore</div>
+            <div class="set-sub">0.0–1.0 · höher = strenger (nur beta)</div>
+          </div>
+          <input type="number" min="0" max="1" step="0.05" class="set-input" id="set-overtone" value="0.15">
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-lbl">Grundton-Mindestanteil %</div>
+            <div class="set-sub">110–220 Hz Anteil am Gesamtspektrum (nur beta)</div>
+          </div>
+          <input type="number" min="1" max="60" class="set-input" id="set-gtband" value="8">
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-lbl">Mindestdauer A-Phase (s)</div>
+            <div class="set-sub">Offener Vokal – Mindest-Sekunden (nur beta)</div>
+          </div>
+          <input type="number" min="0.1" max="5" step="0.1" class="set-input" id="set-phaseA" value="0.3">
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-lbl">Mindestdauer U-Phase (s)</div>
+            <div class="set-sub">Abgerundeter Vokal – Mindest-Sekunden (nur beta)</div>
+          </div>
+          <input type="number" min="0.1" max="5" step="0.1" class="set-input" id="set-phaseU" value="0.4">
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-lbl">Mindestdauer M-Phase (s)</div>
+            <div class="set-sub">Nasales Summen – Mindest-Sekunden (nur beta)</div>
+          </div>
+          <input type="number" min="0.1" max="5" step="0.1" class="set-input" id="set-phaseM" value="0.5">
+        </div>
+      </div>
+    </div>
+
     <button class="set-save" onclick="saveSettings()">Einstellungen speichern</button>
     <div class="set-note" id="set-note">Wirkt sich auf die nächste Session aus</div>
   </div>
 
-  <!-- top nav placeholder removed (moved to top) -->
-
-</div>
+</div><!-- #app -->
 
 <script>
+'use strict';
 const $=id=>document.getElementById(id);
 const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 
 const MIN_PEAK_DIST=1.5, SMOOTH=8, PROMINENCE=2.5;
-// AUM-Frequenzband: Grundton + erste Obertöne, breit gefasst für tiefe/hohe Stimmen
+// Legacy broad band (used when beta OFF)
 const BAND_LO=70, BAND_HI=800;
-const BAND_RATIO_MIN=0.35; // Mindestanteil der Energie, der im AUM-Band liegen muss
-const ADAPT_NOISE_ALPHA=0.02; // wie schnell sich der Rauschboden in Pausen nachjustiert
+const BAND_RATIO_MIN=0.35;
+// New narrow bands (used when beta ON)
+const FUND_LO=110, FUND_HI=220;   // Grundton-Fenster
+const MHUM_LO=70,  MHUM_HI=150;   // M-Hum / Nasenresonanz
+const ADAPT_NOISE_ALPHA=0.02;
 let CIRC1=0, CIRC2=0;
 
-/* ===== Einstellungen (persistiert in localStorage) ===== */
+/* ── Settings ── */
 const SET_KEY='aumSettings';
-const DEFAULT_SET={prepMin:7,chantMin:7,goal:21,minDur:5,warnSec:60,warnOn:true,bonusOn:true};
+const DEFAULT_SET={
+  prepMin:7,chantMin:7,goal:21,minDur:5,warnSec:60,
+  warnOn:true,bonusOn:true,
+  // NEW beta fields
+  betaOn:false,
+  overtoneMinScore:0.15,
+  gtBandMinPct:8,
+  // Phase thresholds (Aufgabe 2)
+  phaseMinA:0.3,   // Sekunden Mindestdauer für A-Phase
+  phaseMinU:0.4,   // Sekunden Mindestdauer für U-Phase
+  phaseMinM:0.5    // Sekunden Mindestdauer für M-Phase
+};
 let SET={...DEFAULT_SET};
 
 function loadSettings(){
-  try{
-    const raw=localStorage.getItem(SET_KEY);
-    SET=raw?{...DEFAULT_SET,...JSON.parse(raw)}:{...DEFAULT_SET};
-  }catch(e){SET={...DEFAULT_SET};}
+  try{const raw=localStorage.getItem(SET_KEY);SET=raw?{...DEFAULT_SET,...JSON.parse(raw)}:{...DEFAULT_SET};}
+  catch(e){SET={...DEFAULT_SET};}
 }
 function applySettingsToInputs(){
   $('set-prep').value=SET.prepMin;
@@ -420,10 +489,16 @@ function applySettingsToInputs(){
   $('set-warn').value=SET.warnSec;
   $('tog-warn').classList.toggle('on',SET.warnOn);
   $('tog-bonus').classList.toggle('on',SET.bonusOn);
+  $('tog-beta').classList.toggle('on',SET.betaOn);
+  $('set-overtone').value=SET.overtoneMinScore;
+  $('set-gtband').value=SET.gtBandMinPct;
+  $('set-phaseA').value=SET.phaseMinA;
+  $('set-phaseU').value=SET.phaseMinU;
+  $('set-phaseM').value=SET.phaseMinM;
 }
 function toggleSetting(key){
-  const el=key==='warn'?$('tog-warn'):$('tog-bonus');
-  el.classList.toggle('on');
+  const map={warn:'tog-warn',bonus:'tog-bonus',beta:'tog-beta'};
+  $( map[key] ).classList.toggle('on');
 }
 function saveSettings(){
   if(run){flash('Bitte erst die laufende Praxis stoppen','#E24B4A');return;}
@@ -434,155 +509,406 @@ function saveSettings(){
   SET.warnSec=Math.max(10,parseInt($('set-warn').value)||60);
   SET.warnOn=$('tog-warn').classList.contains('on');
   SET.bonusOn=$('tog-bonus').classList.contains('on');
+  SET.betaOn=$('tog-beta').classList.contains('on');
+  SET.overtoneMinScore=Math.min(1,Math.max(0,parseFloat($('set-overtone').value)||0.15));
+  SET.gtBandMinPct=Math.min(60,Math.max(1,parseInt($('set-gtband').value)||8));
+  SET.phaseMinA=Math.min(5,Math.max(0.1,parseFloat($('set-phaseA').value)||0.3));
+  SET.phaseMinU=Math.min(5,Math.max(0.1,parseFloat($('set-phaseU').value)||0.4));
+  SET.phaseMinM=Math.min(5,Math.max(0.1,parseFloat($('set-phaseM').value)||0.5));
   try{localStorage.setItem(SET_KEY,JSON.stringify(SET));}catch(e){}
   $('set-note').textContent='Gespeichert ✓';
   setTimeout(()=>{$('set-note').textContent='Wirkt sich auf die nächste Session aus';},2000);
-  // Fortschrittsanzeige im Zähler-Tab an die neue Zieleinstellung anpassen
-  // (nur relevant, falls man zwischen den Tabs wechselt, ohne neu zu starten)
   if(!run) updateProgress();
 }
 loadSettings();
 
-// Ableitungen aus den Einstellungen, in Sekunden (PREP/CHANT/WARN/GOAL bleiben
-// als Funktionsnamen erhalten, lesen aber jetzt aus SET statt fix zu sein)
 function PREP(){return SET.prepMin*60;}
 function CHANT(){return SET.chantMin*60;}
 function WARN(){return SET.warnSec;}
 function GOALN(){return SET.goal;}
 function MINDUR(){return SET.minDur;}
 
+/* ── Ring ── */
 function initRing(){
-  const svg=document.getElementById('ringsvg');
-  const s=Math.min(window.innerWidth-60, window.innerHeight*0.22);
-  svg.style.width=s+'px'; svg.style.height=s+'px';
-  CIRC1=2*Math.PI*95; CIRC2=2*Math.PI*78;
-  document.getElementById('rfill1').style.strokeDasharray=CIRC1;
-  document.getElementById('rfill1').style.strokeDashoffset=CIRC1;
-  document.getElementById('rfill2').style.strokeDasharray=CIRC2;
-  document.getElementById('rfill2').style.strokeDashoffset=CIRC2;
+  const svg=$('ringsvg');
+  const s=Math.min(window.innerWidth-60, window.innerHeight*0.20);
+  svg.style.width=s+'px';svg.style.height=s+'px';
+  CIRC1=2*Math.PI*95;CIRC2=2*Math.PI*78;
+  $('rfill1').style.strokeDasharray=CIRC1;
+  $('rfill1').style.strokeDashoffset=CIRC1;
+  $('rfill2').style.strokeDasharray=CIRC2;
+  $('rfill2').style.strokeDashoffset=CIRC2;
 }
 initRing();
 window.addEventListener('resize',initRing);
 applySettingsToInputs();
 
+/* ── State ── */
 let run=false,tot=0,csec=0,cnt=0,lend=0,goalShown=false;
 let durations=[],avgDur=0;
+let starting=false;
 let iv=null,actx=null,an=null,ms=null,af=null,da=null,wt=null;
 let freqData=null,binHz=0;
 let inPeak=false,peakMax=0,peakStart=0,peakBandRatioSum=0,peakBandRatioN=0;
+// beta accumulators
+let peakGtSum=0,peakMhumSum=0,peakOvertoneSum=0;
+// Aufgabe 2: Phasen-Zeitleiste
+// phaseTimeline: Array of {phase:'A'|'U'|'M'|'?', start:ms, end:ms}
+let phaseTimeline=[];
+let currentPhase='?';
+let phasePhaseStart=0;
+// Mehrheitsfenster für Glättung (letzte N Klassifikationen)
+const PHASE_SMOOTH_N=5;
+let phaseWindow=[];
 let dynamicThr=0.015,calibrating=false,calibSamples=[];
-let noiseFloor=0.01; // adaptiv nachjustierter Rauschboden während Pausen
+let noiseFloor=0.01;
 let rmsHistory=[];
 
 function ph(){if(!run)return'i';if(tot<PREP())return'p';if(tot<PREP()+CHANT())return'c';return'e'}
 
-function ring1(pct,col){const e=$('rfill1');e.style.strokeDashoffset=CIRC1*(1-Math.min(1,pct));e.setAttribute('stroke',col)}
-function ring2(pct,col){const e=$('rfill2');e.style.strokeDashoffset=CIRC2*(1-Math.min(1,pct));e.setAttribute('stroke',col)}
+function ring1(pct,col){
+  const e=$('rfill1');
+  e.style.strokeDashoffset=CIRC1*(1-Math.min(1,Math.max(0,pct)));
+  e.setAttribute('stroke',col);
+}
+function ring2(pct,col){
+  const e=$('rfill2');
+  e.style.strokeDashoffset=CIRC2*(1-Math.min(1,Math.max(0,pct)));
+  e.setAttribute('stroke',col);
+}
 
 function updateProgress(){
-  const pct=Math.min(100,Math.round(cnt/GOALN()*100));
+  const goal=GOALN();
+  const pct=Math.min(100,Math.round(cnt/goal*100));
   $('prog-bar').style.width=pct+'%';
-  $('prog-bar').style.background=cnt>=GOALN()?'#40d090':'#534AB7';
-  $('prog-txt').textContent=cnt+' / '+GOALN()+' ('+pct+'%)';
+  $('prog-bar').style.background=cnt>=goal?'#40d090':'#534AB7';
+  $('prog-txt').textContent=cnt+' / '+goal+(cnt>goal?' (+'+(cnt-goal)+')':' ('+pct+'%)');
 }
 
 function updateStats(dur){
-  if(dur) durations.push(dur);
+  if(dur>0)durations.push(dur);
   if(durations.length>0){
     avgDur=durations.reduce((a,b)=>a+b)/durations.length;
     $('stat-avg').textContent=avgDur.toFixed(1);
   }
-  if(dur) $('stat-last').textContent=dur.toFixed(1);
+  if(dur>0)$('stat-last').textContent=dur.toFixed(1);
 }
 
+const DOT_MAX=54;
 function dots(){
-  const n=Math.max(GOALN(),cnt+1),c=$('dots');
-  c.innerHTML=Array.from({length:Math.min(n,30)},(_,i)=>{
+  const goal=GOALN();
+  const n=Math.max(goal,cnt+1);
+  const show=Math.min(n,DOT_MAX);
+  const c=$('dots');
+  c.innerHTML=Array.from({length:show},(_,i)=>{
     let cl='d';
-    if(i<cnt) cl+= i<GOALN()?' done':' goal';
+    if(i<cnt) cl+=i<goal?' done':' goal';
     return`<div class="${cl}"></div>`;
   }).join('');
+  const ov=$('dots-overflow');
+  if(n>DOT_MAX){
+    const pct=Math.min(100,Math.round(cnt/goal*100));
+    ov.textContent=cnt+' / '+goal+' AUMs gezeigt ('+pct+'%)';
+  } else {
+    ov.textContent='';
+  }
 }
 
-function flash(m,col){$('sig').textContent=m;$('sig').style.color=col||'#f09050';clearTimeout(wt);wt=setTimeout(()=>$('sig').textContent='',3500)}
+let flashTimer=null;
+function flash(m,col){
+  $('sig').textContent=m;$('sig').style.color=col||'#f09050';
+  clearTimeout(flashTimer);
+  flashTimer=setTimeout(()=>{if($('sig'))$('sig').textContent='';},3500);
+}
 
-// Echter Glocken-/Gong-Klang: mehrere leicht unharmonische Teiltöne (wie bei
-// echten Metall-Klangkörpern üblich) mit langem exponentiellem Ausklang,
-// statt eines kurzen Sinus-Beeps. base = Grundfrequenz in Hz.
+/* ── Audio ── */
 function gong(base=185){
   if(!actx)return;
-  const partials=[1,2.0,2.76,3.31,4.02,5.18]; // typische Glocken-Teilton-Verhältnisse
+  const partials=[1,2.0,2.76,3.31,4.02,5.18];
   const now=actx.currentTime;
   partials.forEach((mult,i)=>{
     const o=actx.createOscillator();
     const g=actx.createGain();
-    o.type='sine';
-    o.frequency.value=base*mult;
+    o.type='sine';o.frequency.value=base*mult;
     o.connect(g);g.connect(actx.destination);
-    const peak=0.4/(i+1); // höhere Teiltöne leiser
-    const dur=3.2-i*0.35; // höhere Teiltöne klingen schneller aus
+    const peak=0.4/(i+1);
+    const dur=Math.max(3.2-i*0.35,0.5);
     g.gain.setValueAtTime(0,now);
     g.gain.linearRampToValueAtTime(peak,now+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0005,now+Math.max(dur,0.6));
-    o.start(now);
-    o.stop(now+Math.max(dur,0.6)+0.1);
+    g.gain.exponentialRampToValueAtTime(0.0005,now+dur);
+    o.start(now);o.stop(now+dur+0.1);
   });
 }
 
 function beep(ff,dd){
   if(!actx)return;
-  dd.forEach((t,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=ff[i]||ff[0];const s=actx.currentTime+t/1000;g.gain.setValueAtTime(0.35,s);g.gain.exponentialRampToValueAtTime(0.001,s+0.28);o.start(s);o.stop(s+0.3)});
+  dd.forEach((t,i)=>{
+    const o=actx.createOscillator(),g=actx.createGain();
+    o.connect(g);g.connect(actx.destination);
+    o.frequency.value=ff[i]||ff[0];
+    const s=actx.currentTime+t/1000;
+    g.gain.setValueAtTime(0.35,s);
+    g.gain.exponentialRampToValueAtTime(0.001,s+0.28);
+    o.start(s);o.stop(s+0.3);
+  });
 }
 
 function showGoal(){
   if(goalShown)return;
   goalShown=true;
-  gong(185); // einmaliger Gong, kein Popup, keine Bestätigung nötig
+  gong(185);
   $('big').classList.add('goal');
   $('gb-txt').textContent='🔔 Ziel erreicht – '+cnt+' AUMs';
   $('goalbanner').classList.add('show');
-  // Banner blendet nach einer Weile von selbst wieder aus, blockiert nichts
-  setTimeout(()=>{$('goalbanner').classList.remove('show');},6000);
+  setTimeout(()=>{if($('goalbanner'))$('goalbanner').classList.remove('show');},6000);
 }
 
 function getRMS(){
   if(!an||!da)return 0;
   an.getByteTimeDomainData(da);
-  let s=0;for(let i=0;i<da.length;i++){const v=(da[i]-128)/128;s+=v*v;}
+  let s=0;
+  for(let i=0;i<da.length;i++){const v=(da[i]-128)/128;s+=v*v;}
   return Math.sqrt(s/da.length);
 }
-function smoothRMS(v){rmsHistory.push(v);if(rmsHistory.length>SMOOTH)rmsHistory.shift();return rmsHistory.reduce((a,b)=>a+b)/rmsHistory.length;}
-
-// Anteil der Energie im AUM-typischen Frequenzband (BAND_LO–BAND_HI Hz)
-// relativ zur Gesamtenergie des Spektrums. Filtert Atem-Rauschen (sehr breitbandig,
-// kaum Tonhöhe) und hochfrequente Störgeräusche (Klicken, Rascheln) heraus.
-function getBandRatio(){
-  if(!an||!freqData)return 0;
-  an.getFloatFrequencyData(freqData);
-  const loBin=Math.max(1,Math.floor(BAND_LO/binHz));
-  const hiBin=Math.min(freqData.length-1,Math.ceil(BAND_HI/binHz));
-  let bandLin=0,totalLin=0;
-  for(let i=1;i<freqData.length;i++){
-    // dB -> lineare Pseudo-Energie (Referenz irrelevant, nur Verhältnis zählt)
-    const lin=Math.pow(10,freqData[i]/20);
-    totalLin+=lin;
-    if(i>=loBin&&i<=hiBin) bandLin+=lin;
-  }
-  if(totalLin<=0)return 0;
-  return bandLin/totalLin;
+function smoothRMS(v){
+  rmsHistory.push(v);
+  if(rmsHistory.length>SMOOTH)rmsHistory.shift();
+  return rmsHistory.reduce((a,b)=>a+b)/rmsHistory.length;
 }
 
+/* ═══════════════════════════════════════════════════
+   NEW FREQUENCY ANALYSIS HELPERS (Task 1)
+   ═══════════════════════════════════════════════════ */
+
+/**
+ * getBandEnergy(loHz, hiHz)
+ * Returns the fraction of total linear spectral energy in [loHz, hiHz].
+ * Replaces the old hard-coded getBandRatio().
+ */
+function getBandEnergy(loHz, hiHz){
+  if(!an||!freqData)return 0;
+  an.getFloatFrequencyData(freqData);
+  const loBin=Math.max(1,Math.floor(loHz/binHz));
+  const hiBin=Math.min(freqData.length-1,Math.ceil(hiHz/binHz));
+  let bandLin=0,totalLin=0;
+  for(let i=1;i<freqData.length;i++){
+    const lin=Math.pow(10,freqData[i]/20);
+    totalLin+=lin;
+    if(i>=loBin&&i<=hiBin)bandLin+=lin;
+  }
+  return totalLin>0?bandLin/totalLin:0;
+}
+
+/**
+ * getDominantFreq(loHz, hiHz)
+ * Returns the frequency (Hz) of the highest-energy bin in the given range,
+ * as a rough estimate of the fundamental (f0).
+ */
+function getDominantFreq(loHz, hiHz){
+  if(!an||!freqData)return 0;
+  // freqData already filled by the most recent getBandEnergy call in the same frame
+  // Re-fill to be safe (getFloatFrequencyData is idempotent per frame)
+  an.getFloatFrequencyData(freqData);
+  const loBin=Math.max(1,Math.floor(loHz/binHz));
+  const hiBin=Math.min(freqData.length-1,Math.ceil(hiHz/binHz));
+  let maxDb=-Infinity,maxBin=loBin;
+  for(let i=loBin;i<=hiBin;i++){
+    if(freqData[i]>maxDb){maxDb=freqData[i];maxBin=i;}
+  }
+  return maxBin*binHz;
+}
+
+/**
+ * getOvertoneScore(f0)
+ * Checks for harmonic energy at 2×f0 and 3×f0 relative to the f0 bin energy.
+ * Returns a 0–1 score: 0 = no harmonics detected, 1 = strong harmonics.
+ * A score above SET.overtoneMinScore is considered a "real singing" indicator.
+ */
+function getOvertoneScore(f0){
+  if(!an||!freqData||f0<=0)return 0;
+  an.getFloatFrequencyData(freqData);
+  const halfBW=binHz*1.5; // ±1.5 bins window around each harmonic
+  function peakEnergy(centerHz){
+    const lo=Math.max(1,Math.floor((centerHz-halfBW)/binHz));
+    const hi=Math.min(freqData.length-1,Math.ceil((centerHz+halfBW)/binHz));
+    let e=0;
+    for(let i=lo;i<=hi;i++) e+=Math.pow(10,freqData[i]/20);
+    return e;
+  }
+  const e1=peakEnergy(f0);
+  if(e1<=0)return 0;
+  const e2=peakEnergy(f0*2);
+  const e3=peakEnergy(f0*3);
+  // Score: presence of both 2nd and 3rd harmonic relative to fundamental
+  // Clamp so that a single very strong overtone doesn't exceed 1
+  const score=Math.min(1, (e2+e3)/(e1*2+0.001));
+  return score;
+}
+
+/* Legacy wrapper – keeps old code path when beta OFF */
+function getBandRatio(){
+  return getBandEnergy(BAND_LO, BAND_HI);
+}
+
+/* ═══════════════════════════════════════════════════
+   AUFGABE 2: FRAME-PHASENKLASSIFIKATOR  A / U / M / ?
+   ═══════════════════════════════════════════════════
+
+   Klassifikation basiert auf drei Merkmalen:
+   - f0          : Dominante Grundfrequenz im AUM-Bereich
+   - mhumRatio   : Energie im Nasenresonanz-Band 70–150 Hz (M-Phase → hoch)
+   - gtRatio     : Energie im Grundton-Band 110–220 Hz
+   - overtone    : Oberton-Score (A/U → harmonisch, M → diffus/weniger)
+
+   Heuristik (anpassbar über Schwellwerte):
+   M  : mhumRatio > 0.35  UND  overtone < 0.25   → nasales Summen dominiert
+   A  : f0 > 160  UND  gtRatio > 0.07             → offener hoher Vokal
+   U  : f0 <= 160 UND  gtRatio > 0.07             → tieferer, gerundeter Vokal
+   ?  : alles andere (Übergang, Noise, unklar)
+*/
+function classifyPhaseRaw(f0, mhumRatio, gtRatio, overtone){
+  if(mhumRatio > 0.35 && overtone < 0.30) return 'M';
+  if(gtRatio > 0.07){
+    if(f0 > 160) return 'A';
+    return 'U';
+  }
+  return '?';
+}
+
+/**
+ * classifyPhaseSmoothed(rawPhase)
+ * Schiebt rawPhase in ein Ringpuffer-Fenster der Breite PHASE_SMOOTH_N
+ * und gibt die häufigste Phase (Mehrheitsvotum) zurück.
+ */
+function classifyPhaseSmoothed(rawPhase){
+  phaseWindow.push(rawPhase);
+  if(phaseWindow.length > PHASE_SMOOTH_N) phaseWindow.shift();
+  // Mehrheitsvotum
+  const tally={'A':0,'U':0,'M':0,'?':0};
+  phaseWindow.forEach(p=>tally[p]++);
+  let best='?',bestN=0;
+  for(const k in tally){ if(tally[k]>bestN){bestN=tally[k];best=k;} }
+  return best;
+}
+
+/**
+ * recordPhaseTransition(newPhase, nowMs)
+ * Wird pro Frame aufgerufen (während inPeak).
+ * Erkennt Phasenwechsel und schreibt Segmente in phaseTimeline.
+ */
+function recordPhaseTransition(newPhase, nowMs){
+  if(newPhase !== currentPhase){
+    if(currentPhase !== '?' && phasePhaseStart > 0){
+      phaseTimeline.push({phase:currentPhase, start:phasePhaseStart, end:nowMs});
+    }
+    currentPhase = newPhase;
+    phasePhaseStart = nowMs;
+  }
+}
+
+/**
+ * finalizePhaseTimeline(peakEndMs)
+ * Schreibt das letzte laufende Segment ab und gibt die Timeline zurück.
+ */
+function finalizePhaseTimeline(peakEndMs){
+  if(currentPhase !== '?' && phasePhaseStart > 0){
+    phaseTimeline.push({phase:currentPhase, start:phasePhaseStart, end:peakEndMs});
+  }
+  return phaseTimeline;
+}
+
+/**
+ * collapseTimeline(timeline)
+ * Fasst aufeinanderfolgende gleiche Phasen zusammen.
+ * Gibt Array von {phase, durSec} zurück.
+ */
+function collapseTimeline(timeline){
+  const segs=[];
+  timeline.forEach(seg=>{
+    const dur=(seg.end-seg.start)/1000;
+    if(segs.length>0 && segs[segs.length-1].phase===seg.phase){
+      segs[segs.length-1].durSec+=dur;
+    } else {
+      segs.push({phase:seg.phase, durSec:dur});
+    }
+  });
+  return segs;
+}
+
+/**
+ * evaluateAUM(timeline)
+ * Prüft ob die Zeitleiste ein vollständiges A→U→M enthält.
+ * Gibt 'full' | 'half' | 'rejected' zurück.
+ *
+ * Regeln:
+ * - 'full'     : A, U und M erscheinen in dieser Reihenfolge (nicht unbedingt direkt hintereinander),
+ *                alle drei Phasen erreichen ihre Mindestdauer.
+ * - 'half'     : Mindestens zwei der drei Phasen erkannt, A und M vorhanden ODER
+ *                Gesamt-Peak lang genug aber M fehlt (reiner AU-Vokal).
+ * - 'rejected' : Kein erkennbares A→U→M-Muster.
+ */
+function evaluateAUM(timeline){
+  const segs=collapseTimeline(timeline);
+  // Sammle pro Phase die Gesamt-Dauer und den frühesten Auftritt (Index in segs)
+  const phases={A:{dur:0,firstIdx:Infinity},U:{dur:0,firstIdx:Infinity},M:{dur:0,firstIdx:Infinity}};
+  segs.forEach((s,i)=>{
+    if(s.phase==='A'||s.phase==='U'||s.phase==='M'){
+      phases[s.phase].dur+=s.durSec;
+      if(i<phases[s.phase].firstIdx)phases[s.phase].firstIdx=i;
+    }
+  });
+  const hasA=phases.A.dur>=SET.phaseMinA;
+  const hasU=phases.U.dur>=SET.phaseMinU;
+  const hasM=phases.M.dur>=SET.phaseMinM;
+
+  // Reihenfolge prüfen: A muss vor U erscheinen, U vor M (erste Vorkommen)
+  const orderAU=phases.A.firstIdx < phases.U.firstIdx;
+  const orderUM=phases.U.firstIdx < phases.M.firstIdx;
+  const orderAM=phases.A.firstIdx < phases.M.firstIdx;
+
+  if(hasA && hasU && hasM && orderAU && orderUM) return 'full';
+  if(hasA && hasM && orderAM)                    return 'half';
+  if(hasA && hasU)                               return 'half';
+  if(hasM && (hasA||hasU))                       return 'half';
+  return 'rejected';
+}
+
+/**
+ * timelineToString(segs)
+ * Kompakte Debug-Darstellung z.B. "A0.8 U0.5 M1.2"
+ */
+function timelineToString(segs){
+  return segs.map(s=>s.phase+s.durSec.toFixed(1)).join(' ');
+}
+
+/* ═══════════════════════════════════════════════════ */
+
 function aloop(){
-  if(!run){af=requestAnimationFrame(aloop);return;}
+  if(!run||!actx){af=null;return;}
   const raw=getRMS();
   const rms=smoothRMS(raw);
-  const bandRatio=getBandRatio();
   const pct=Math.min(100,rms/Math.max(dynamicThr,0.001)*40);
   $('vbar').style.width=pct+'%';
   $('vbar').style.background=inPeak?'#1D9E75':'#534AB7';
   $('dvol').textContent=rms.toFixed(4);
   $('dthr').textContent=dynamicThr.toFixed(4);
-  $('dband').textContent=(bandRatio*100).toFixed(0)+'%';
+  $('dstate').textContent=inPeak?'Singt':'Pause';
+
+  // ── Compute frequency values (always, for debug display) ──
+  const bandRatioLegacy = getBandEnergy(BAND_LO, BAND_HI);  // classic 70–800 Hz
+  const bandRatioGt     = getBandEnergy(FUND_LO, FUND_HI);  // Grundton 110–220 Hz
+  const bandRatioMhum   = getBandEnergy(MHUM_LO, MHUM_HI);  // M-Hum 70–150 Hz
+  const f0              = getDominantFreq(MHUM_LO, FUND_HI*1.1); // search 70–242 Hz
+  const overtoneScore   = getOvertoneScore(f0);
+
+  // legacy debug field
+  $('dband').textContent=(bandRatioLegacy*100).toFixed(0)+'%';
+  // new beta debug fields
+  $('df0').textContent=f0>0?f0.toFixed(0):'–';
+  $('dovertone').textContent=overtoneScore.toFixed(2);
+  $('dmhum').textContent=(bandRatioMhum*100).toFixed(0);
+  $('dgt').textContent=(bandRatioGt*100).toFixed(0);
+  $('dmode').textContent=SET.betaOn?'β':'klassisch';
 
   if(calibrating){
     calibSamples.push(rms);
@@ -596,51 +922,133 @@ function aloop(){
     }
   }
 
-  // Count AUMs from start (including prep phase)
-  if(run && !calibrating){
+  if(run&&!calibrating){
     const now=performance.now();
     if(!inPeak){
-      // Kontinuierliche Nachjustierung des Rauschbodens während Pausen
-      // (langsamer exponentieller Gleitwert -> reagiert auf Umgebung/Ermüdung,
-      // ohne durch einzelne kurze Ausreißer aus der Bahn zu geraten)
       if(rms<dynamicThr*0.5){
         noiseFloor=noiseFloor*(1-ADAPT_NOISE_ALPHA)+rms*ADAPT_NOISE_ALPHA;
         dynamicThr=Math.max(noiseFloor*PROMINENCE,0.008);
       }
       if(rms>dynamicThr){
         inPeak=true;peakMax=rms;peakStart=now;
-        peakBandRatioSum=bandRatio;peakBandRatioN=1;
+        peakBandRatioSum=bandRatioLegacy;peakBandRatioN=1;
+        // reset beta accumulators
+        peakGtSum=bandRatioGt;peakMhumSum=bandRatioMhum;peakOvertoneSum=overtoneScore;
+        // reset Aufgabe 2 phase timeline
+        phaseTimeline=[];currentPhase='?';phasePhaseStart=0;phaseWindow=[];
         $('dstate').textContent='Singt';
       }
     } else {
       if(rms>peakMax)peakMax=rms;
-      peakBandRatioSum+=bandRatio;peakBandRatioN++;
+      // accumulate both legacy and beta values per frame
+      peakBandRatioSum+=bandRatioLegacy;peakBandRatioN++;
+      peakGtSum+=bandRatioGt;
+      peakMhumSum+=bandRatioMhum;
+      peakOvertoneSum+=overtoneScore;
+
+      // ── Aufgabe 2: Phasenklassifikation pro Frame ──
+      if(SET.betaOn){
+        const rawPhase=classifyPhaseRaw(f0, bandRatioMhum, bandRatioGt, overtoneScore);
+        const smoothedPhase=classifyPhaseSmoothed(rawPhase);
+        recordPhaseTransition(smoothedPhase, now);
+        // Live-Anzeige im Debug-Panel
+        const dph=$('dphase');
+        dph.textContent=smoothedPhase;
+        dph.className='phase-badge '+(smoothedPhase==='?'?'q':smoothedPhase);
+        // Live-Zeitleiste (komprimiert)
+        const liveSegs=collapseTimeline([...phaseTimeline,
+          currentPhase!=='?'?{phase:currentPhase,start:phasePhaseStart,end:now}:null
+        ].filter(Boolean));
+        $('dtimeline').textContent=timelineToString(liveSegs)||'–';
+      }
+
       if(rms<dynamicThr*0.5){
         const dur=(now-peakStart)/1000;
-        const avgBandRatio=peakBandRatioN>0?peakBandRatioSum/peakBandRatioN:0;
+        const avgBandRatioLegacy=peakBandRatioN>0?peakBandRatioSum/peakBandRatioN:0;
+        const avgGt=peakBandRatioN>0?peakGtSum/peakBandRatioN:0;
+        const avgMhum=peakBandRatioN>0?peakMhumSum/peakBandRatioN:0;
+        const avgOvertone=peakBandRatioN>0?peakOvertoneSum/peakBandRatioN:0;
         inPeak=false;
         $('ddur').textContent=dur.toFixed(1)+'s';
-        $('dband').textContent=(avgBandRatio*100).toFixed(0)+'%';
-        const bandOk=avgBandRatio>=BAND_RATIO_MIN;
+
         const md=MINDUR();
-        if(dur>=md&&bandOk){
-          const since=(now-lend)/1000;
-          if(since>MIN_PEAK_DIST||lend===0){
-            cnt++;lend=now;
-            $('big').textContent=cnt;
-            updateStats(dur);
-            updateProgress();
-            dots();
-            if(cnt===GOALN()) showGoal();
-            else if(cnt>GOALN()){if(SET.bonusOn)beep([784,659],[0,180]);flash('AUM #'+cnt+' — Bonus!','#AFA9EC');}
-            else flash('AUM #'+cnt,'#40d090');
+        const since=(now-lend)/1000;
+
+        // ── Decision: beta mode or legacy ──
+        let accept=false;
+        let rejectReason='';
+
+        if(SET.betaOn){
+          // ── Aufgabe 2: Phasen-Zeitleiste auswerten ──
+          const timeline=finalizePhaseTimeline(now);
+          const segs=collapseTimeline(timeline);
+          const tlStr=timelineToString(segs);
+          $('dtimeline').textContent=tlStr||'–';
+          // Phase zurücksetzen für nächsten Peak
+          currentPhase='?';phasePhaseStart=0;phaseWindow=[];
+
+          const durOk  = dur >= md;
+          const distOk = since > MIN_PEAK_DIST || lend===0;
+
+          if(!durOk){
+            rejectReason='Zu kurz ('+dur.toFixed(1)+'s) – min. '+md+'s';
+          } else if(!distOk){
+            rejectReason=''; // zu nah – still ignorieren
+          } else {
+            // Vollständigkeitsprüfung
+            const verdict=evaluateAUM(timeline);
+            if(verdict==='full'){
+              accept=true; // cnt++ weiter unten
+            } else if(verdict==='half'){
+              // Halb-AUM: eigener Toast, kein Zähler
+              lend=now; // Abstandsmessung aktualisieren
+              flash('Halbes AUM ('+tlStr+') – weiter singen','#f09050');
+              gong(140); // tieferer Ton als Feedback
+            } else {
+              rejectReason='Kein A→U→M erkannt ('+tlStr+')';
+            }
           }
-        } else if(dur>=md&&!bandOk){
-          flash('Ton ignoriert (kein AUM-Klang)','#7080b0');
-        } else if(dur>0&&dur<md){
-          flash('Zu kurz ('+dur.toFixed(1)+'s) – min. '+md+'s','#7080b0');
+        } else {
+          // Legacy path (unchanged)
+          const bandOk=avgBandRatioLegacy>=BAND_RATIO_MIN;
+          const durOk=dur>=md;
+          const distOk=since>MIN_PEAK_DIST||lend===0;
+          if(!durOk){
+            rejectReason='Zu kurz ('+dur.toFixed(1)+'s) – min. '+md+'s';
+          } else if(!bandOk){
+            rejectReason='Ton ignoriert (kein AUM-Klang)';
+          } else if(!distOk){
+            rejectReason='';
+          } else {
+            accept=true;
+          }
         }
-        peakMax=0;peakBandRatioSum=0;peakBandRatioN=0;$('dstate').textContent='Pause';
+
+        if(accept){
+          cnt++;lend=now;
+          $('big').textContent=cnt;
+          updateStats(dur);
+          updateProgress();
+          dots();
+          if(cnt===GOALN())showGoal();
+          else if(cnt>GOALN()){
+            if(SET.bonusOn)beep([784,659],[0,180]);
+            flash('AUM #'+cnt+' — Bonus!','#AFA9EC');
+          } else {
+            flash('AUM #'+cnt,'#40d090');
+          }
+        } else if(rejectReason){
+          flash(rejectReason,'#7080b0');
+        }
+
+        peakMax=0;peakBandRatioSum=0;peakBandRatioN=0;
+        peakGtSum=0;peakMhumSum=0;peakOvertoneSum=0;
+        // reset phase state (already done inside beta block, but ensure clean slate)
+        phaseTimeline=[];currentPhase='?';phasePhaseStart=0;phaseWindow=[];
+        if(SET.betaOn){
+          const dph=$('dphase');dph.textContent='?';dph.className='phase-badge q';
+        }
+        $('dstate').textContent='Pause';
       }
     }
   }
@@ -650,37 +1058,51 @@ function aloop(){
 async function mic(){
   try{
     actx=new(window.AudioContext||window.webkitAudioContext)();
-    ms=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    if(actx.state==='suspended') await actx.resume();
+    ms=await navigator.mediaDevices.getUserMedia({
+      audio:{
+        echoCancellation:false,
+        noiseSuppression:false,
+        autoGainControl:false
+      },
+      video:false
+    });
     const src=actx.createMediaStreamSource(ms);
-    an=actx.createAnalyser();an.fftSize=1024;da=new Uint8Array(an.fftSize);
-    freqData=new Float32Array(an.frequencyBinCount);
+    an=actx.createAnalyser();
+    // ── TASK 1: higher FFT resolution ──
+    // 4096 → ~10-12 Hz/bin at 44.1/48 kHz (was 43-47 Hz/bin at 1024)
+    an.fftSize=4096;
+    da=new Uint8Array(an.fftSize);
+    freqData=new Float32Array(an.frequencyBinCount); // frequencyBinCount = fftSize/2
     binHz=actx.sampleRate/an.fftSize;
     src.connect(an);
     calibrating=true;calibSamples=[];
-    flash('Kalibriere... kurz still bleiben','#60b8f0');
+    flash('Kalibriere… kurz still bleiben','#60b8f0');
     af=requestAnimationFrame(aloop);
   }catch(e){
-    flash('Mikrofon: '+e.message,'#E24B4A');
-    // Aufräumen: actx wurde oben schon erzeugt, bevor getUserMedia fehlschlug
-    // (oder ms wurde im Race-Fall unten schon gesetzt) — ohne diesen Aufruf
-    // bleibt der AudioContext offen bzw. ein evtl. doch erteilter Mikrofon-Stream
-    // aktiv (Mikrofon-Lämpchen bleibt an), obwohl die Session schon abgebrochen ist.
     stopaudio();
-    // Ohne Mikrofon kann nichts erkannt werden — Session sauber abbrechen,
-    // statt den Timer sinnlos weiterlaufen zu lassen, ohne dass je etwas gezählt wird
+    const msg=e.name==='NotAllowedError'
+      ?'Mikrofon-Zugriff verweigert – bitte in den Einstellungen erlauben'
+      :'Mikrofon: '+e.message;
+    flash(msg,'#E24B4A');
     if(run){
-      run=false;clearInterval(iv);
-      const b=$('btn');b.className='btn go';b.innerHTML='▶ Starten';
-      $('pill').textContent='Abgebrochen';$('pill').className='pill';
+      run=false;starting=false;
+      clearInterval(iv);iv=null;
+      const b=$('btn');b.className='go';b.textContent='▶ Starten';
+      $('pill').textContent='Abgebrochen';$('pill').className='';
       $('dstate').textContent='Idle';
     }
   }
 }
+
 function stopaudio(){
-  if(af){cancelAnimationFrame(af);af=null}
-  if(ms){ms.getTracks().forEach(t=>t.stop());ms=null}
-  if(actx){actx.close();actx=null}
-  an=null;da=null;
+  if(af){cancelAnimationFrame(af);af=null;}
+  if(ms){ms.getTracks().forEach(t=>t.stop());ms=null;}
+  if(actx){
+    const ctx=actx;actx=null;
+    ctx.close().catch(()=>{});
+  }
+  an=null;da=null;freqData=null;
 }
 
 function tick(){
@@ -690,88 +1112,94 @@ function tick(){
   if(p==='c')csec++;
   $('tdisp').textContent=fmt(tot);
 
-  // Inner ring: chant countdown (7 min)
   if(p==='p'){
     const remPrep=PREP()-tot;
     $('tdisp2').textContent='Chant in '+fmt(remPrep);
     ring1(tot/PREP(),'#378ADD');
-    ring2(cnt/GOALN(),'#534AB7');
-    $('pill').textContent='Vorbereitung';$('pill').className='pill p';
+    ring2(Math.min(1,cnt/GOALN()),'#534AB7');
+    $('pill').textContent='Vorbereitung';$('pill').className='p';
     $('tsub').textContent='Gesamt';
     if(remPrep===0)flash('Jetzt singen!','#40d090');
   } else if(p==='c'){
     const remChant=CHANT()-csec;
     $('tdisp2').textContent='Chant: '+fmt(remChant);
     ring1(csec/CHANT(),'#1D9E75');
-    ring2(cnt/GOALN(),'#534AB7');
-    $('pill').textContent='Chanten';$('pill').className='pill c';
+    ring2(Math.min(1,cnt/GOALN()),'#534AB7');
+    $('pill').textContent='Chanten';$('pill').className='c';
     $('tsub').textContent='Chant-Phase';
-    if(SET.warnOn&&!inPeak&&lend>0&&(performance.now()-lend)/1000>WARN()&&cnt<GOALN()){
-      lend=performance.now();beep([880,880,880],[0,250,500]);flash('Weiter singen! Erst '+cnt+'/'+GOALN(),'#f09050');
+    const sinceMs=performance.now()-lend;
+    if(SET.warnOn&&!inPeak&&lend>0&&sinceMs/1000>WARN()&&cnt<GOALN()){
+      lend=performance.now();
+      beep([880,880,880],[0,250,500]);
+      flash('Weiter singen! Erst '+cnt+'/'+GOALN(),'#f09050');
     }
-    if(csec===CHANT()&&cnt<GOALN()){beep([880,880,880],[0,250,500]);flash('Chant-Zeit um! Erst '+cnt+'/'+GOALN(),'#f09050');}
+    if(csec===CHANT()&&cnt<GOALN()){
+      beep([880,880,880],[0,250,500]);
+      flash('Chant-Zeit um! Erst '+cnt+'/'+GOALN(),'#f09050');
+    }
   } else {
     $('tdisp2').textContent='Bonus: '+fmt(tot-PREP()-CHANT());
     ring1(1,'#D85A30');
-    ring2(cnt/GOALN(),'#534AB7');
+    ring2(Math.min(1,cnt/GOALN()),'#534AB7');
     $('pill').textContent=cnt>=GOALN()?'Fertig ✓':'Cooldown';
-    $('pill').className=cnt>=GOALN()?'pill done':'pill e';
+    $('pill').className=cnt>=GOALN()?'done':'e';
     $('tsub').textContent='Nachklang';
-    // Praxis dauert über die geplante Chant-Zeit hinaus, Ziel noch nicht erreicht:
-    // weiterhin regelmäßig erinnern, statt komplett zu verstummen
-    if(SET.warnOn&&!inPeak&&cnt<GOALN()&&lend>0&&(performance.now()-lend)/1000>WARN()){
-      lend=performance.now();beep([880,880,880],[0,250,500]);flash('Praxis läuft weiter – erst '+cnt+'/'+GOALN(),'#f09050');
+    const sinceMs=performance.now()-lend;
+    if(SET.warnOn&&!inPeak&&cnt<GOALN()&&lend>0&&sinceMs/1000>WARN()){
+      lend=performance.now();
+      beep([880,880,880],[0,250,500]);
+      flash('Praxis läuft weiter – erst '+cnt+'/'+GOALN(),'#f09050');
     }
   }
 }
 
 function toggle(){
+  if(starting)return;
   const b=$('btn');
   if(!run){
+    starting=true;
     run=true;tot=0;csec=0;cnt=0;lend=0;goalShown=false;durations=[];avgDur=0;
-    inPeak=false;peakMax=0;peakBandRatioSum=0;peakBandRatioN=0;rmsHistory=[];
+    inPeak=false;peakMax=0;peakBandRatioSum=0;peakBandRatioN=0;
+    peakGtSum=0;peakMhumSum=0;peakOvertoneSum=0;
+    rmsHistory=[];
     $('big').textContent='0';$('big').classList.remove('goal');
     $('sig').textContent='';$('dstate').textContent='Wartet';
     $('stat-avg').textContent='–';$('stat-last').textContent='–';
     $('goalbanner').classList.remove('show');
-    updateProgress();dots();mic();iv=setInterval(tick,1000);
-    b.className='btn stop';b.innerHTML='⏹ Stoppen';
+    updateProgress();dots();
+    b.className='stop';b.innerHTML='⏹ Stoppen';
+    mic().then(()=>{starting=false;}).catch(()=>{starting=false;});
+    iv=setInterval(tick,1000);
   } else {
-    run=false;clearInterval(iv);stopaudio();
-    b.className='btn go';b.innerHTML='▶ Starten';
-    $('pill').textContent='Beendet';$('pill').className='pill';
+    run=false;
+    clearInterval(iv);iv=null;
+    stopaudio();
+    b.className='go';b.innerHTML='▶ Starten';
+    $('pill').textContent='Beendet';$('pill').className='';
     ring1(0,'#1D9E75');$('tsub').textContent='Beendet';$('dstate').textContent='Idle';
     $('tdisp2').textContent='–';
-    flash('Beendet – '+cnt+' AUMs ('+Math.round(cnt/GOALN()*100)+'%)','#40d090');
-    if(cnt>0) saveSession();
+    flash('Beendet – '+cnt+' AUMs ('+Math.round(cnt/Math.max(1,GOALN())*100)+'%)','#40d090');
+    if(cnt>0)saveSession();
   }
 }
 
-/* ===== Verlauf / Praxis-Historie (localStorage) ===== */
+/* ── Verlauf / History ── */
 const HIST_KEY='aumHistory';
-
 function loadHist(){
-  try{
-    const raw=localStorage.getItem(HIST_KEY);
-    return raw?JSON.parse(raw):[];
-  }catch(e){return []}
+  try{const raw=localStorage.getItem(HIST_KEY);return raw?JSON.parse(raw):[];}
+  catch(e){return[];}
 }
 function saveHistArr(arr){
-  try{localStorage.setItem(HIST_KEY,JSON.stringify(arr));}catch(e){flash('Speichern fehlgeschlagen','#E24B4A');}
+  try{localStorage.setItem(HIST_KEY,JSON.stringify(arr));}
+  catch(e){flash('Speichern fehlgeschlagen','#E24B4A');}
 }
 function saveSession(){
   const hist=loadHist();
-  hist.push({
-    date:new Date().toISOString(),
-    count:cnt,
-    avgDur:avgDur||0,
-    totalSec:tot,
-    goalReached:cnt>=GOALN()
-  });
+  hist.push({date:new Date().toISOString(),count:cnt,avgDur:avgDur||0,totalSec:tot,goalReached:cnt>=GOALN()});
   saveHistArr(hist);
 }
 
-function dayKey(d){ // lokales Datum, nicht UTC, damit Abend-Sessions nicht falsch zugeordnet werden
+function dayKey(d){
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 
@@ -779,31 +1207,23 @@ function computeStreaks(hist){
   if(hist.length===0)return{current:0,best:0};
   const days=new Set(hist.map(s=>dayKey(new Date(s.date))));
   const sorted=[...days].sort();
-  // längste Streak: aufeinanderfolgende Kalendertage
-  let best=1,run_=1;
+  let best=1,runLen=1;
   for(let i=1;i<sorted.length;i++){
     const prev=new Date(sorted[i-1]),cur=new Date(sorted[i]);
-    const diff=Math.round((cur-prev)/86400000);
-    if(diff===1){run_++;best=Math.max(best,run_);}else{run_=1;}
+    if(Math.round((cur-prev)/86400000)===1){runLen++;best=Math.max(best,runLen);}
+    else runLen=1;
   }
-  // aktuelle Streak: von heute oder gestern rückwärts zählen
   const today=new Date();today.setHours(0,0,0,0);
-  let cur=0;
-  let cursor=new Date(today);
-  if(!days.has(dayKey(cursor))){
-    cursor.setDate(cursor.getDate()-1); // heute noch nicht geübt -> bei gestern starten
-  }
-  while(days.has(dayKey(cursor))){
-    cur++;
-    cursor.setDate(cursor.getDate()-1);
-  }
+  let cur=0,cursor=new Date(today);
+  if(!days.has(dayKey(cursor)))cursor.setDate(cursor.getDate()-1);
+  while(days.has(dayKey(cursor))){cur++;cursor.setDate(cursor.getDate()-1);}
   return{current:cur,best:Math.max(best,cur)};
 }
 
-function isoWeek(d){ // ISO-8601 Kalenderwoche
+function isoWeek(d){
   const date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
-  const dayNum=(date.getUTCDay()+6)%7; // Montag=0 ... Sonntag=6
-  date.setUTCDate(date.getUTCDate()-dayNum+3); // Donnerstag dieser Woche (ISO-Regel)
+  const dayNum=(date.getUTCDay()+6)%7;
+  date.setUTCDate(date.getUTCDate()-dayNum+3);
   const firstThursday=new Date(Date.UTC(date.getUTCFullYear(),0,4));
   const fdNum=(firstThursday.getUTCDay()+6)%7;
   firstThursday.setUTCDate(firstThursday.getUTCDate()-fdNum+3);
@@ -812,15 +1232,15 @@ function isoWeek(d){ // ISO-8601 Kalenderwoche
 
 function get13Weeks(){
   const today=new Date();today.setHours(0,0,0,0);
-  const todayDow=(today.getDay()+6)%7; // Montag=0 ... Sonntag=6
+  const todayDow=(today.getDay()+6)%7;
   const curMonday=new Date(today);curMonday.setDate(today.getDate()-todayDow);
-  const firstMonday=new Date(curMonday);firstMonday.setDate(curMonday.getDate()-12*7); // 13 Wochen inkl. aktueller
+  const firstMonday=new Date(curMonday);firstMonday.setDate(curMonday.getDate()-12*7);
   const weeks=[];
   for(let w=0;w<13;w++){
     const monday=new Date(firstMonday);monday.setDate(firstMonday.getDate()+w*7);
     weeks.push(monday);
   }
-  return {weeks,today};
+  return{weeks,today};
 }
 
 function renderHeatmap(hist){
@@ -828,43 +1248,48 @@ function renderHeatmap(hist){
   const byDay={};
   hist.forEach(s=>{const k=dayKey(new Date(s.date));byDay[k]=(byDay[k]||0)+1;});
   const{weeks,today}=get13Weeks();
-  let html='';
+  const parts=[];
   weeks.forEach(monday=>{
-    html+=`<div class="hkw" title="KW ${isoWeek(monday)}">${isoWeek(monday)}</div>`;
+    parts.push(`<div class="hkw" title="KW ${isoWeek(monday)}">${isoWeek(monday)}</div>`);
     for(let dI=0;dI<7;dI++){
       const d=new Date(monday);d.setDate(monday.getDate()+dI);
-      if(d>today){html+='<div class="hcell future"></div>';continue;}
+      if(d>today){parts.push('<div class="hcell future"></div>');continue;}
       const n=byDay[dayKey(d)]||0;
       let cl='hcell';
       if(n>=3)cl+=' l4';else if(n===2)cl+=' l3';else if(n===1)cl+=' l2';
-      html+=`<div class="${cl}" title="${dayKey(d)}: ${n} Session(n)"></div>`;
+      parts.push(`<div class="${cl}" title="${dayKey(d)}: ${n} Session(n)"></div>`);
     }
   });
-  el.innerHTML=html;
+  el.innerHTML=parts.join('');
 }
 
 function renderHeatmapWeeks(hist){
   const el=$('h-heatmap-week');
   const byDay={};
-  hist.forEach(s=>{const k=dayKey(new Date(s.date));byDay[k]=(byDay[k]||0)+1;});
+  const sumByDay={};
+  hist.forEach(s=>{
+    const k=dayKey(new Date(s.date));
+    byDay[k]=(byDay[k]||0)+1;
+    sumByDay[k]=(sumByDay[k]||0)+s.count;
+  });
   const{weeks,today}=get13Weeks();
-  let html='';
+  const parts=[];
   weeks.forEach(monday=>{
-    html+=`<div class="hkw" title="KW ${isoWeek(monday)}">${isoWeek(monday)}</div>`;
-    if(monday>today){html+='<div class="hcell future"></div>';return;}
+    parts.push(`<div class="hkw" title="KW ${isoWeek(monday)}">${isoWeek(monday)}</div>`);
+    if(monday>today){parts.push('<div class="hcell future"></div>');return;}
     let daysPracticed=0,aumSum=0;
     for(let dI=0;dI<7;dI++){
       const d=new Date(monday);d.setDate(monday.getDate()+dI);
       if(d>today)continue;
       const k=dayKey(d);
-      if(byDay[k]){daysPracticed++;}
-      hist.forEach(s=>{if(dayKey(new Date(s.date))===k)aumSum+=s.count;});
+      if(byDay[k])daysPracticed++;
+      aumSum+=(sumByDay[k]||0);
     }
     let cl='hcell';
     if(daysPracticed>=5)cl+=' l4';else if(daysPracticed>=3)cl+=' l3';else if(daysPracticed>=1)cl+=' l2';
-    html+=`<div class="${cl}" title="KW ${isoWeek(monday)}: ${daysPracticed} Tag(e) geübt, ${aumSum} AUMs"></div>`;
+    parts.push(`<div class="${cl}" title="KW ${isoWeek(monday)}: ${daysPracticed} Tag(e) geübt, ${aumSum} AUMs"></div>`);
   });
-  el.innerHTML=html;
+  el.innerHTML=parts.join('');
 }
 
 let histView='days';
@@ -881,26 +1306,19 @@ function setHistView(v){
 function renderChart(hist){
   const el=$('h-chart');
   const withDur=hist.filter(s=>s.avgDur>0);
-  if(withDur.length<2){
-    el.innerHTML='<div class="chart-empty">Noch zu wenig Daten für einen Trend</div>';
-    return;
-  }
-  const pts=withDur.slice(-30); // letzte 30 Sessions
+  if(withDur.length<2){el.innerHTML='<div class="chart-empty">Noch zu wenig Daten für einen Trend</div>';return;}
+  const pts=withDur.slice(-30);
   const W=280,H=110,PAD=10;
   const vals=pts.map(p=>p.avgDur);
   const mn=Math.min(...vals)*0.9,mx=Math.max(...vals)*1.1;
   const range=Math.max(mx-mn,0.1);
   const stepX=(W-2*PAD)/Math.max(pts.length-1,1);
-  const coords=pts.map((p,i)=>{
-    const x=PAD+i*stepX;
-    const y=H-PAD-((p.avgDur-mn)/range)*(H-2*PAD);
-    return [x,y];
-  });
+  const coords=pts.map((p,i)=>[PAD+i*stepX,H-PAD-((p.avgDur-mn)/range)*(H-2*PAD)]);
   const path=coords.map((c,i)=>(i===0?'M':'L')+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ');
-  const dots=coords.map(c=>`<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="2.5" fill="#40d090"/>`).join('');
+  const dotsSvg=coords.map(c=>`<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="2.5" fill="#40d090"/>`).join('');
   el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
     <path d="${path}" fill="none" stroke="#534AB7" stroke-width="2"/>
-    ${dots}
+    ${dotsSvg}
   </svg>
   <div style="display:flex;justify-content:space-between;font-size:10px;color:#505080;margin-top:4px">
     <span>${mn.toFixed(1)}s</span><span>letzte ${pts.length} Sessions</span><span>${mx.toFixed(1)}s</span>
@@ -914,10 +1332,9 @@ function renderList(hist){
   el.innerHTML=sorted.map(s=>{
     const d=new Date(s.date);
     const dateStr=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
-    const mins=Math.round(s.totalSec/60);
-    return `<div class="sess-row">
-      <div><div class="sess-date">${dateStr}</div><div class="sess-meta">${mins} Min · Ø ${s.avgDur.toFixed(1)}s</div></div>
-      <div class="sess-cnt ${s.goalReached?'goal':''}">${s.count}</div>
+    return`<div class="sess-row">
+      <div><div class="sess-date">${dateStr}</div><div class="sess-meta">${Math.round(s.totalSec/60)} Min · Ø ${(s.avgDur||0).toFixed(1)}s</div></div>
+      <div class="sess-cnt${s.goalReached?' goal':''}">${s.count}</div>
     </div>`;
   }).join('');
 }
@@ -942,15 +1359,17 @@ function renderHist(){
   setHistView(histView);
 }
 
-/* ===== Tab-Navigation ===== */
+/* ── Tab Navigation ── */
 function switchTab(name){
   ['counter','hist','settings'].forEach(n=>{
     $('screen-'+n).classList.toggle('active',n===name);
     $('nav-'+n).classList.toggle('active',n===name);
   });
-  if(name==='hist') renderHist();
-  if(name==='settings') applySettingsToInputs();
+  $('pill').style.display=name==='counter'?'':'none';
+  if(name==='hist')renderHist();
+  if(name==='settings')applySettingsToInputs();
 }
+$('pill').style.display='';
 
 function exportHist(){
   const hist=loadHist();
@@ -968,6 +1387,19 @@ function clearHist(){
   renderHist();
   flash('Verlauf gelöscht','#E24B4A');
 }
+
+let wakeLock=null;
+async function requestWakeLock(){
+  if('wakeLock' in navigator){
+    try{wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+  }
+}
+function releaseWakeLock(){
+  if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null;}
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&run)requestWakeLock();
+});
 </script>
 </body>
 </html>
