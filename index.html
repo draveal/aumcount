@@ -16,9 +16,10 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .screen.active{display:flex}
 
 /* bottom nav */
-.topnav{flex-shrink:0;width:100%;display:flex;align-items:center;gap:6px;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;background:rgba(18,18,42,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);box-shadow:0 2px 16px rgba(0,0,0,0.5);z-index:30}
-.navbtn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:#505080;display:flex;flex-direction:row;align-items:center;gap:5px;font-size:12px;font-weight:600;cursor:pointer;padding:8px 14px;border-radius:12px;-webkit-tap-highlight-color:transparent;transition:background .2s,color .2s,border-color .2s;flex:1;justify-content:center;letter-spacing:0.01em}
-.navbtn .navicon{font-size:16px;line-height:1}
+.topnav{flex-shrink:0;width:100%;display:flex;align-items:center;gap:5px;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;background:rgba(18,18,42,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);box-shadow:0 2px 16px rgba(0,0,0,0.5);z-index:30}
+.navbtn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:#505080;display:flex;flex-direction:row;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer;padding:8px 6px;border-radius:11px;-webkit-tap-highlight-color:transparent;transition:background .2s,color .2s,border-color .2s;flex:1;justify-content:center;letter-spacing:0.01em;min-width:0}
+.navbtn span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.navbtn .navicon{font-size:15px;line-height:1;flex-shrink:0}
 .navbtn.active{background:linear-gradient(135deg,#3a2e90,#534AB7);color:#fff;border-color:rgba(83,74,183,0.4);box-shadow:0 2px 10px rgba(83,74,183,0.4)}
 
 /* ── Unified professional header (all three tabs) ── */
@@ -46,6 +47,7 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 }
 .header-icon.counter{background:linear-gradient(135deg,#1a1a3e,#252550);box-shadow:0 0 0 1px rgba(83,74,183,0.3)}
 .header-icon.history{background:linear-gradient(135deg,#0e2635,#162840);box-shadow:0 0 0 1px rgba(55,138,221,0.25)}
+.header-icon.lengths{background:linear-gradient(135deg,#1a2a18,#1e3a22);box-shadow:0 0 0 1px rgba(64,208,144,0.25)}
 .header-icon.settings{background:linear-gradient(135deg,#1e1830,#251e40);box-shadow:0 0 0 1px rgba(160,150,220,0.2)}
 .header-title-group{display:flex;flex-direction:column;gap:1px}
 .header-title{font-size:15px;font-weight:600;color:#e8eaff;letter-spacing:-0.01em}
@@ -121,20 +123,74 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 
 /* history tab content */
 .hist-section{width:100%;margin-top:14px}
-.hist-h{font-size:11px;color:#505080;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+.hist-h{font-size:11px;color:#505080;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.hist-h span{text-transform:none;letter-spacing:0;color:#7080b0;font-size:10px}
+
+/* Verlauf-Tab: feste Kopf-/Fußzeile, mittlerer Bereich verteilt sich per Flex und
+   scrollt nur im äußersten Notfall (sehr kleine Bildschirme) minimal – im
+   Normalfall passt alles ohne Scrollen auf den sichtbaren Bereich. */
+.hist-screen.screen{overflow:hidden;justify-content:flex-start}
+.hist-body{width:100%;flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding-top:8px;overflow-y:auto}
+.hist-footer{width:100%;flex-shrink:0;padding:8px 0 max(8px,env(safe-area-inset-bottom,8px))}
 
 .streakrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.streakrow.compact{gap:6px}
+.streakrow.compact .streak-card{padding:6px 6px;border-radius:10px}
+.streakrow.compact .streak-val{font-size:16px}
+.streakrow.four{grid-template-columns:1fr 1fr 1fr 1fr}
+.streakrow.four .streak-val{font-size:15px}
+.streakrow.four .streak-lbl{font-size:8.5px;line-height:1.2}
 .streak-card{background:#181830;border-radius:12px;padding:9px 8px;text-align:center}
 .streak-val{font-size:20px;font-weight:500;color:#e8eaff}
 .streak-lbl{font-size:9px;color:#505080;margin-top:1px}
+#h-best-inline{display:block;color:#3a3a5c;font-size:8px}
 
 .viewtog{display:flex;gap:4px;background:#12122a;border-radius:22px;padding:3px;border:1px solid rgba(255,255,255,0.07)}
 .viewtog button{font-size:11px;padding:5px 12px;border-radius:18px;border:none;background:transparent;color:#505080;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s,color .2s;letter-spacing:0.02em}
 .viewtog button.active{background:#534AB7;color:#fff;box-shadow:0 1px 6px rgba(83,74,183,0.5)}
 
-.heatmap-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.heatmap{display:grid;grid-template-columns:repeat(13,26px);grid-template-rows:18px repeat(7,26px);grid-auto-flow:column;gap:3px;justify-content:center;margin:0 auto}
-.heatmap.hidden{display:none}
+/* Monats-Navigation: ersetzt die alte Dauerliste von 13 Wochen. Ein Monat ist
+   immer sichtbar, Pfeile wechseln vor/zurück, Tippen auf den Monatsnamen springt
+   zum aktuellen Monat zurück. */
+.month-nav{width:100%;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.month-arrow{flex-shrink:0;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,0.07);background:#181830;color:#AFA9EC;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
+.month-arrow:disabled{opacity:0.3;cursor:default}
+.month-label{flex:1;text-align:center;background:none;border:none;color:#e8eaff;font-size:14px;font-weight:600;cursor:pointer;padding:6px;-webkit-tap-highlight-color:transparent}
+
+.cal-scroll{width:100%}
+
+/* Monatsraster: 7 Spalten x (Wochentagskopf + bis zu 6 Wochen), feste, kompakte
+   Zellengröße, damit der ganze Monat ohne Scrollen Platz findet. */
+.calmonth{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax(0,1fr);gap:3px;width:100%;height:168px}
+.calmonth.hidden{display:none}
+.calwd{font-size:9px;color:#3a3a5c;text-align:center;padding-bottom:2px}
+.calcell{border-radius:6px;position:relative;display:flex;align-items:flex-start;justify-content:flex-end;padding:2px 3px;min-height:0;cursor:default;-webkit-tap-highlight-color:transparent;transition:transform 0.1s,box-shadow 0.15s}
+.calcell.outside{opacity:0.25}
+.calcell.istoday{box-shadow:inset 0 0 0 1.5px #AFA9EC}
+.caldnum{font-size:9px;color:#7080b0;font-weight:500}
+.calcell.l2 .caldnum,.calcell.l3 .caldnum,.calcell.l4 .caldnum{color:#0a0a18}
+.calcell.clickable{cursor:pointer;touch-action:manipulation}
+.calcell.clickable:active{transform:scale(0.92)}
+.calcell.clickable:hover{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,0.35)}
+.calcell.istoday.clickable:hover{box-shadow:inset 0 0 0 1.5px #AFA9EC}
+/* Die sichtbare Zelle ist auf kleinen Screens oft nur ~20-25px hoch – zu klein
+   für zuverlässige Finger-Treffer (Touch-Ziele sollten ≥44px sein). Diese
+   Pseudo-Fläche erweitert den tatsächlich klickbaren Bereich unsichtbar in
+   den Grid-Gap hinein, ohne das Layout/Aussehen zu verändern. */
+.calcell.clickable::after{content:'';position:absolute;top:-1px;right:-1px;bottom:-1px;left:-1px}
+
+.calweeks{display:flex;flex-direction:column;gap:5px;width:100%}
+.calweeks.hidden{display:none}
+.calweekrow{display:flex;align-items:center;gap:8px}
+.calweeklbl{flex-shrink:0;width:48px;font-size:10px;color:#505080}
+.calweekcell{flex:1;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:default;-webkit-tap-highlight-color:transparent;transition:transform 0.1s,box-shadow 0.15s}
+.calweektxt{font-size:10px;color:#0a0a18;font-weight:600}
+.calweekcell.future .calweektxt{color:#3a3a5c}
+.calweekcell.clickable{cursor:pointer;touch-action:manipulation;position:relative}
+.calweekcell.clickable:active{transform:scale(0.96)}
+.calweekcell.clickable:hover{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,0.35)}
+.calweekcell.clickable::after{content:'';position:absolute;top:-2px;right:0;bottom:-2px;left:0}
+
 .hkw{font-size:9px;color:#3a3a5c;text-align:center;line-height:18px}
 .hcell{width:100%;height:100%;border-radius:5px;background:#1e1e38}
 .hcell.future{background:transparent;border:1px dashed #21213d;border-radius:4px}
@@ -143,22 +199,23 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .hcell.l3{background:#534AB7}
 .hcell.l4{background:#40d090}
 
-.heatmap-week{display:grid;grid-template-columns:repeat(13,26px);grid-template-rows:18px 26px;grid-auto-flow:column;gap:3px;justify-content:center;margin:0 auto}
-.heatmap-week.hidden{display:none}
-
 .chart-wrap{width:100%;background:#181830;border-radius:12px;padding:10px}
 .chart-empty{font-size:12px;color:#505080;text-align:center;padding:16px 0}
 
-.sess-list{display:flex;flex-direction:column;gap:6px}
-.sess-row{background:#181830;border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center}
+/* Sessions-Liste: eigener scrollbarer Container mit fester Maximalhöhe, statt die
+   ganze Seite zu verlängern. Dadurch bleibt der Rest des Tabs (Monat, Stats)
+   immer sichtbar, auch wenn ein Monat viele Sessions hat. */
+.hist-list-section{display:flex;flex-direction:column;flex:1;min-height:120px;width:100%}
+.sess-list{display:flex;flex-direction:column;gap:6px;overflow-y:auto;flex:1;min-height:0;padding-right:2px}
+.sess-row{background:#181830;border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 .sess-date{font-size:12px;color:#e8eaff}
 .sess-meta{font-size:10px;color:#505080;margin-top:1px}
 .sess-cnt{font-size:15px;font-weight:500;color:#e8eaff}
 .sess-cnt.goal{color:#40d090}
 
-.hist-actions{display:flex;gap:8px;margin-top:14px;margin-bottom:10px}
-.hist-btn{flex:1;padding:10px;border-radius:12px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:#1e1e38;color:#8090c0}
-.hist-btn.danger{color:#E24B4A}
+.hist-actions-row{display:flex;gap:8px;align-items:stretch}
+.hist-btn-icon{flex-shrink:0;width:42px;border-radius:12px;border:none;font-size:16px;cursor:pointer;background:#1e1e38;color:#8090c0;-webkit-tap-highlight-color:transparent}
+.hist-btn-icon.danger{color:#E24B4A}
 
 /* Manuelle Praxis / Kästchen */
 .sess-row{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.15s,transform 0.1s}
@@ -170,9 +227,27 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .sess-manual .sess-date{color:#40d090}
 .manual-badge{font-size:9px;background:rgba(64,208,144,0.12);color:#40d090;border:1px solid rgba(64,208,144,0.2);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle}
 
+/* Hervorhebung: wird kurz auf Session-Zeilen gesetzt, nachdem per Tap auf
+   einen Kalendertag oder eine Wochenzeile dorthin gesprungen wurde. */
+@keyframes sessJumpHL{
+  0%{box-shadow:0 0 0 2px rgba(83,74,183,0.9);background:#26225c}
+  100%{box-shadow:0 0 0 0 rgba(83,74,183,0);background:#181830}
+}
+.sess-row.jump-highlight{animation:sessJumpHL 1.4s ease-out}
+.sess-row.jump-highlight.sess-manual{animation-name:sessJumpHLManual}
+@keyframes sessJumpHLManual{
+  0%{box-shadow:0 0 0 2px rgba(64,208,144,0.9);background:#143a30}
+  100%{box-shadow:0 0 0 0 rgba(64,208,144,0);background:#0e2520}
+}
+
+/* Kein-Treffer-Hinweis, falls ein Tag ohne Sessions angetippt wird (z.B. alte
+   Tage außerhalb des Monats) – kurzer dezenter Hinweis statt totaler Stille. */
+.cal-tap-empty{font-size:11px;color:#505080;text-align:center;padding:4px 0}
+
 /* Manual add button */
 .add-manual-btn{width:100%;padding:10px;border-radius:12px;border:1px dashed rgba(83,74,183,0.35);background:transparent;color:#534AB7;font-size:12px;font-weight:500;cursor:pointer;margin-top:8px;-webkit-tap-highlight-color:transparent;transition:background 0.15s}
 .add-manual-btn:active{background:rgba(83,74,183,0.1)}
+.add-manual-btn.compact{width:auto;flex:1;margin-top:0;white-space:nowrap}
 
 /* settings tab */
 .set-section{width:100%;margin-top:14px}
@@ -192,9 +267,20 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 
 .set-save{width:100%;padding:12px;border-radius:14px;border:none;background:#534AB7;color:#fff;font-size:14px;font-weight:500;cursor:pointer;margin-top:14px}
 .set-note{font-size:10px;color:#505080;text-align:center;margin-top:8px;padding-bottom:6px}
+
+/* Globaler Toast: tab-unabhängiges, kurzes Feedback (z.B. beim Abhaken einer
+   Session direkt aus dem Kalender). #sig existiert nur im Counter-Tab, daher
+   ein eigenes, immer sichtbares Element außerhalb von #app. */
+#globaltoast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,16px) + 78px);transform:translateX(-50%) translateY(10px);
+  background:#1e1e38;color:#e8eaff;font-size:13px;font-weight:500;padding:10px 18px;border-radius:14px;
+  box-shadow:0 6px 24px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.08);
+  opacity:0;pointer-events:none;transition:opacity 0.25s ease,transform 0.25s ease;z-index:999;
+  max-width:86vw;text-align:center;white-space:nowrap}
+#globaltoast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
+<div id="globaltoast"></div>
 <div id="app">
 
   <!-- ===== TOP NAVIGATION ===== -->
@@ -204,6 +290,9 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
     </button>
     <button class="navbtn" id="nav-hist" onclick="switchTab('hist')">
       <span class="navicon">📊</span><span>Verlauf</span>
+    </button>
+    <button class="navbtn" id="nav-lengths" onclick="switchTab('lengths')">
+      <span class="navicon">📏</span><span>Längen</span>
     </button>
     <button class="navbtn" id="nav-settings" onclick="switchTab('settings')">
       <span class="navicon">⚙</span><span>Einst.</span>
@@ -285,7 +374,7 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
   </div>
 
   <!-- ===== TAB 2: VERLAUF ===== -->
-  <div class="screen" id="screen-hist">
+  <div class="screen hist-screen" id="screen-hist">
     <div class="screen-header">
       <div class="header-left">
         <div class="header-icon history">📊</div>
@@ -302,54 +391,76 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
       </div>
     </div>
 
-    <div class="hist-section">
-      <div class="hist-h">Streak</div>
-      <div class="streakrow">
-        <div class="streak-card"><div id="h-streak" class="streak-val">0</div><div class="streak-lbl">Tage in Folge</div></div>
-        <div class="streak-card"><div id="h-best" class="streak-val">0</div><div class="streak-lbl">Längste Streak</div></div>
-        <div class="streak-card"><div id="h-sessions" class="streak-val">0</div><div class="streak-lbl">Sessions gesamt</div></div>
+    <div class="hist-body">
+      <div class="streakrow compact four">
+        <div class="streak-card"><div id="h-streak" class="streak-val">0</div><div class="streak-lbl">Tage Folge<span id="h-best-inline"></span></div></div>
+        <div class="streak-card"><div id="h-sessions" class="streak-val">0</div><div class="streak-lbl">Sessions ges.</div></div>
+        <div class="streak-card"><div id="h-totalaum" class="streak-val">0</div><div class="streak-lbl">AUMs Monat</div></div>
+        <div class="streak-card"><div id="h-avgall" class="streak-val">–</div><div class="streak-lbl">Ø Dauer (s)</div></div>
+      </div>
+
+      <div class="month-nav">
+        <button class="month-arrow" id="month-prev" onclick="shiftMonth(-1)" aria-label="Vorheriger Monat">‹</button>
+        <button class="month-label" id="month-label" onclick="jumpToCurrentMonth()">Juni 2026</button>
+        <button class="month-arrow" id="month-next" onclick="shiftMonth(1)" aria-label="Nächster Monat">›</button>
+      </div>
+
+      <div class="cal-scroll">
+        <div class="calmonth" id="h-calmonth"></div>
+        <div class="calweeks hidden" id="h-calweeks"></div>
+      </div>
+
+      <div class="hist-list-section">
+        <div class="hist-h">Sessions <span id="h-list-month"></span></div>
+        <div class="sess-list" id="h-list"></div>
+      </div>
+    </div>
+
+    <div class="hist-footer">
+      <div class="hist-actions-row">
+        <button class="add-manual-btn compact" onclick="addManualSession()">＋ Manuell eintragen</button>
+        <button class="hist-btn-icon" onclick="exportHist()" aria-label="Exportieren" title="Exportieren">⬇</button>
+        <button class="hist-btn-icon danger" onclick="clearHist()" aria-label="Löschen" title="Löschen">🗑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: LÄNGEN ===== -->
+  <div class="screen" id="screen-lengths">
+    <div class="screen-header">
+      <div class="header-left">
+        <div class="header-icon lengths">📏</div>
+        <div class="header-title-group">
+          <span class="header-title">Längen</span>
+          <span class="header-sub">Dauer je AUM</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="len-sess-pick" class="pill"></span>
       </div>
     </div>
 
     <div class="hist-section">
-      <div class="hist-h">Letzte 13 Wochen</div>
-      <div class="heatmap-scroll">
-        <div class="heatmap" id="h-heatmap"></div>
-        <div class="heatmap-week hidden" id="h-heatmap-week"></div>
-      </div>
+      <div class="hist-h">Letzte Session – einzelne AUMs</div>
+      <div class="chart-wrap" id="len-bars"></div>
     </div>
 
     <div class="hist-section">
-      <div class="hist-h">Ø AUM-Dauer Trend</div>
+      <div class="hist-h">Ø AUM-Dauer Trend (alle Sessions)</div>
       <div class="chart-wrap" id="h-chart"></div>
     </div>
 
     <div class="hist-section">
-      <div class="hist-h">Gesamt</div>
+      <div class="hist-h">Kennzahlen letzte Session</div>
       <div class="streakrow">
-        <div class="streak-card"><div id="h-totalaum" class="streak-val">0</div><div class="streak-lbl">AUMs gesamt</div></div>
-        <div class="streak-card"><div id="h-totaltime" class="streak-val">0</div><div class="streak-lbl">Min. geübt</div></div>
-        <div class="streak-card"><div id="h-avgall" class="streak-val">–</div><div class="streak-lbl">Ø Dauer (s)</div></div>
+        <div class="streak-card"><div id="len-min" class="streak-val">–</div><div class="streak-lbl">Kürzestes (s)</div></div>
+        <div class="streak-card"><div id="len-max" class="streak-val">–</div><div class="streak-lbl">Längstes (s)</div></div>
+        <div class="streak-card"><div id="len-avg" class="streak-val">–</div><div class="streak-lbl">Ø Dauer (s)</div></div>
       </div>
-    </div>
-
-    <div class="hist-section">
-      <div class="hist-h">Sessions</div>
-      <div class="sess-list" id="h-list"></div>
-    </div>
-
-    <div class="hist-section">
-      <div class="hist-h">Manuelle Praxis</div>
-      <button class="add-manual-btn" onclick="addManualSession()">＋ Praxis manuell eintragen</button>
-    </div>
-
-    <div class="hist-actions">
-      <button class="hist-btn" onclick="exportHist()">⬇ Exportieren</button>
-      <button class="hist-btn danger" onclick="clearHist()">🗑 Löschen</button>
     </div>
   </div>
 
-  <!-- ===== TAB 3: EINSTELLUNGEN ===== -->
+  <!-- ===== TAB 4: EINSTELLUNGEN ===== -->
   <div class="screen" id="screen-settings">
     <div class="screen-header">
       <div class="header-left">
@@ -403,6 +514,7 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 
     <button class="set-save" onclick="saveSettings()">Einstellungen speichern</button>
     <div class="set-note" id="set-note">Wirkt sich auf die nächste Session aus</div>
+    <div class="set-note" id="storage-diag" style="margin-top:2px">Speicher wird geprüft…</div>
   </div>
 
   <!-- top nav placeholder removed (moved to top) -->
@@ -420,8 +532,104 @@ const fmt=s=>{const t=Math.max(0,Math.floor(s));return String(Math.floor(t/60)).
  * 1.1.0 – Versionsanzeige ergänzt (Einstellungen-Tab). Speichern der Einstellungen
  *         meldet jetzt ehrlich, wenn localStorage nicht verfügbar/beschreibbar ist,
  *         statt fälschlich immer "Gespeichert ✓" zu zeigen (siehe saveSettings()).
+ * 1.6.0 – Verlauf nach Monaten gruppiert (kompakt, ohne Scrollen), Wochen-Heatmap
+ *         als Monatsraster, neuer Tab "Längen" (Einzel-AUM-Längen + Ø-Trend).
+ *         Speichern abgesichert: IndexedDB-Spiegelung zusätzlich zu localStorage,
+ *         damit Daten auch erhalten bleiben, wenn localStorage blockiert/partitioniert
+ *         ist (z.B. Safari privates Surfen, manche In-App-Browser). Diagnose-Hinweis
+ *         im Einstellungen-Tab zeigt an, welcher Speicherweg tatsächlich funktioniert.
  */
-const APP_VERSION='1.5.0';
+const APP_VERSION='1.6.0';
+
+/* ===== Persistenz-Schicht =====
+ * localStorage ist synchron und schnell, wird daher weiter als primärer Speicher
+ * genutzt (kein Verhaltensumbau nötig). Zusätzlich spiegeln wir jeden Schreibzugriff
+ * asynchron in IndexedDB ("aumDB"), die in vielen Umgebungen funktioniert, in denen
+ * localStorage blockiert ist (z.B. manche iOS-Webview/In-App-Browser, gewisse
+ * Tracking-Schutz-Konfigurationen). Bug-Hinweis: localStorage selbst wird auf
+ * GitHub Pages NICHT blockiert (https-Origin wie jede andere Seite) – betroffen sind
+ * eher: privates Surfen in Safari, "Verhindere geräteübergreifende Nachverfolgung"
+ * in Kombination mit manchen Browsern, oder das Öffnen der rohen Datei via
+ * file://-Pfad statt über eine echte http(s)-Origin.
+ */
+let IDB=null, idbFailed=false;
+function idbOpen(){
+  return new Promise((resolve)=>{
+    if(idbFailed||!('indexedDB' in window)){resolve(null);return;}
+    if(IDB){resolve(IDB);return;}
+    try{
+      const req=indexedDB.open('aumDB',1);
+      req.onupgradeneeded=()=>{req.result.createObjectStore('kv');};
+      req.onsuccess=()=>{IDB=req.result;resolve(IDB);};
+      req.onerror=()=>{idbFailed=true;resolve(null);};
+    }catch(e){idbFailed=true;resolve(null);}
+  });
+}
+async function idbSet(key,value){
+  const db=await idbOpen();
+  if(!db)return false;
+  return new Promise((resolve)=>{
+    try{
+      const tx=db.transaction('kv','readwrite');
+      tx.objectStore('kv').put(value,key);
+      tx.oncomplete=()=>resolve(true);
+      tx.onerror=()=>resolve(false);
+    }catch(e){resolve(false);}
+  });
+}
+async function idbGet(key){
+  const db=await idbOpen();
+  if(!db)return undefined;
+  return new Promise((resolve)=>{
+    try{
+      const tx=db.transaction('kv','readonly');
+      const r=tx.objectStore('kv').get(key);
+      r.onsuccess=()=>resolve(r.result);
+      r.onerror=()=>resolve(undefined);
+    }catch(e){resolve(undefined);}
+  });
+}
+// Diagnose: wird einmal beim Start ermittelt und im Einstellungen-Tab angezeigt.
+let STORAGE_DIAG={ls:false,idb:false};
+function lsAvailable(){
+  try{
+    const t='__aum_test__';
+    localStorage.setItem(t,'1');
+    localStorage.removeItem(t);
+    return true;
+  }catch(e){return false;}
+}
+async function diagnoseStorage(){
+  STORAGE_DIAG.ls=lsAvailable();
+  STORAGE_DIAG.idb=!!(await idbOpen());
+  const el=$('storage-diag');
+  if(!el)return;
+  if(STORAGE_DIAG.ls){
+    el.textContent='✓ Speichern funktioniert (localStorage)'+(STORAGE_DIAG.idb?' + Sicherungskopie aktiv':'');
+    el.style.color='#40d090';
+  } else if(STORAGE_DIAG.idb){
+    el.textContent='⚠ localStorage blockiert – Sicherungsspeicher (IndexedDB) wird genutzt';
+    el.style.color='#f09050';
+  } else {
+    el.textContent='✗ Kein Speicher verfügbar – Daten gehen beim Schließen verloren (privates Surfen?)';
+    el.style.color='#E24B4A';
+  }
+}
+// Generischer Schreib-/Lese-Helfer: localStorage zuerst (synchron, für sofortige
+// UI-Reaktion), IndexedDB immer zusätzlich als Spiegel im Hintergrund.
+function persistSet(key,valueStr){
+  let lsOk=true;
+  try{localStorage.setItem(key,valueStr);}catch(e){lsOk=false;}
+  idbSet(key,valueStr); // fire-and-forget Spiegelung, blockiert UI nicht
+  return lsOk;
+}
+async function persistGet(key){
+  let v=null;
+  try{v=localStorage.getItem(key);}catch(e){v=null;}
+  if(v!=null)return v;
+  const fromIdb=await idbGet(key);
+  return fromIdb!=null?fromIdb:null;
+}
 
 const MIN_PEAK_DIST=1.5, SMOOTH=8, PROMINENCE=2.5;
 // AUM-Frequenzband: Grundton + erste Obertöne, breit gefasst für tiefe/hohe Stimmen
@@ -440,6 +648,15 @@ function loadSettings(){
     const raw=localStorage.getItem(SET_KEY);
     SET=raw?{...DEFAULT_SET,...JSON.parse(raw)}:{...DEFAULT_SET};
   }catch(e){SET={...DEFAULT_SET};}
+}
+// Wird nach dem Start einmal aufgerufen: falls localStorage leer/blockiert war,
+// aber IndexedDB noch einen früheren Stand hat, diesen nachladen und UI aktualisieren.
+async function reconcileSettingsFromIdb(){
+  if(STORAGE_DIAG.ls)return; // localStorage funktioniert -> das ist die führende Quelle
+  const raw=await idbGet(SET_KEY);
+  if(raw){
+    try{SET={...DEFAULT_SET,...JSON.parse(raw)};applySettingsToInputs();if(!run)updateProgress();}catch(e){}
+  }
 }
 function applySettingsToInputs(){
   $('set-prep').value=SET.prepMin;
@@ -470,11 +687,16 @@ function saveSettings(){
   // SET ist ab hier bereits aktualisiert, die laufende Sitzung nutzt also in jedem
   // Fall die neuen Werte – auch wenn das Schreiben in localStorage unten fehlschlägt.
   let persisted=true;
-  try{localStorage.setItem(SET_KEY,JSON.stringify(SET));}catch(e){persisted=false;}
+  persisted=persistSet(SET_KEY,JSON.stringify(SET));
   applySettingsToInputs(); // geclampte Werte ins UI zurückschreiben, falls Eingabe über die Grenzen ging
   if(persisted){
     $('set-note').textContent='Gespeichert ✓';
     setTimeout(()=>{$('set-note').textContent='Wirkt sich auf die nächste Session aus';},2000);
+  } else if(STORAGE_DIAG.idb){
+    // localStorage blockiert, aber IndexedDB-Spiegel hat übernommen – Daten bleiben
+    // erhalten, auch wenn der schnelle Pfad fehlschlug.
+    $('set-note').textContent='Gespeichert (Sicherungsspeicher) ✓';
+    setTimeout(()=>{$('set-note').textContent='Wirkt sich auf die nächste Session aus';},2500);
   } else {
     // Nicht einfach schweigend ignorieren: ohne diese Meldung denkt man, die
     // Einstellungen seien gespeichert, und wundert sich erst beim nächsten
@@ -488,6 +710,7 @@ function saveSettings(){
   if(!run) updateProgress();
 }
 loadSettings();
+diagnoseStorage().then(()=>{reconcileSettingsFromIdb();reconcileHistFromIdb();});
 
 // Ableitungen aus den Einstellungen, in Sekunden (PREP/CHANT/WARN/GOAL bleiben
 // als Funktionsnamen erhalten, lesen aber jetzt aus SET statt fix zu sein)
@@ -878,7 +1101,7 @@ function toggle(){
   }
 }
 
-/* ===== Verlauf / Praxis-Historie (localStorage) ===== */
+/* ===== Verlauf / Praxis-Historie (localStorage + IndexedDB-Spiegel) ===== */
 const HIST_KEY='aumHistory';
 
 function loadHist(){
@@ -896,7 +1119,16 @@ function loadHist(){
   }catch(e){return[];}
 }
 function saveHistArr(arr){
-  try{localStorage.setItem(HIST_KEY,JSON.stringify(arr));}catch(e){flash('Speichern fehlgeschlagen','#E24B4A');}
+  const ok=persistSet(HIST_KEY,JSON.stringify(arr));
+  if(!ok&&!STORAGE_DIAG.idb)flash('Speichern fehlgeschlagen – kein Speicher verfügbar','#E24B4A');
+}
+// Beim Start: falls localStorage leer/blockiert war, aber IndexedDB einen Stand
+// hat (z.B. nach Blockade durch privates Surfen, der Stand stammt aus einer
+// früheren Sitzung mit funktionierendem localStorage), diesen übernehmen.
+async function reconcileHistFromIdb(){
+  if(STORAGE_DIAG.ls)return;
+  const raw=await idbGet(HIST_KEY);
+  if(raw&&$('screen-hist').classList.contains('active'))renderHist();
 }
 function saveSession(){
   const hist=loadHist();
@@ -908,7 +1140,8 @@ function saveSession(){
     avgDur:avgDur||0,
     totalSec:tot,
     chantSec:csec,
-    goalReached:cnt>=GOALN()
+    goalReached:cnt>=GOALN(),
+    durations:durations.slice() // Einzel-AUM-Längen (Sek.) für den Längen-Tab
   });
   saveHistArr(hist);
 }
@@ -952,65 +1185,182 @@ function isoWeek(d){ // ISO-8601 Kalenderwoche
   return 1+Math.round((date-firstThursday)/(7*86400000));
 }
 
-function get13Weeks(){
-  const today=new Date();today.setHours(0,0,0,0);
-  const todayDow=(today.getDay()+6)%7; // Montag=0 ... Sonntag=6
-  const curMonday=new Date(today);curMonday.setDate(today.getDate()-todayDow);
-  const firstMonday=new Date(curMonday);firstMonday.setDate(curMonday.getDate()-12*7); // 13 Wochen inkl. aktueller
-  const weeks=[];
-  for(let w=0;w<13;w++){
-    const monday=new Date(firstMonday);monday.setDate(firstMonday.getDate()+w*7);
-    weeks.push(monday);
-  }
-  return {weeks,today};
+/* ===== Monats-Navigation (ersetzt die alte 13-Wochen-Dauerliste) =====
+ * Statt einer langen, scrollenden 13-Wochen-Heatmap zeigt der Verlauf-Tab jetzt
+ * genau einen Monat gleichzeitig, mit ◀/▶-Pfeilen zum Wechseln. Das hält die
+ * Ansicht kompakt und bildschirmfüllend, ohne dass man auf dem Bildschirm
+ * scrollen muss. "Wochen" zeigt dieselbe Monatsspanne, aber als Wochenzeilen
+ * statt Tageskästchen.
+ */
+let monthCursor=new Date(); // Tag im jeweils angezeigten Monat (Tag selbst irrelevant)
+monthCursor.setDate(1);
+monthCursor.setHours(0,0,0,0);
+
+const MONTH_NAMES=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+function monthKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+
+function shiftMonth(delta){
+  monthCursor=new Date(monthCursor.getFullYear(),monthCursor.getMonth()+delta,1);
+  renderHist();
+}
+function jumpToCurrentMonth(){
+  const now=new Date();
+  monthCursor=new Date(now.getFullYear(),now.getMonth(),1);
+  renderHist();
 }
 
-function renderHeatmap(hist){
-  const el=$('h-heatmap');
+// Liefert alle Kalendertage, die in der Monatsansicht sichtbar sind: vollständige
+// Wochen (Montag–Sonntag), die den 1. und letzten Tag des Monats einschließen.
+// So bleibt das Raster immer ein sauberes Rechteck (4–6 Zeilen) ohne Lücken.
+function getMonthGridDays(cursor){
+  const year=cursor.getFullYear(),month=cursor.getMonth();
+  const first=new Date(year,month,1);
+  const last=new Date(year,month+1,0);
+  const firstDow=(first.getDay()+6)%7; // Montag=0
+  const gridStart=new Date(first);gridStart.setDate(first.getDate()-firstDow);
+  const lastDow=(last.getDay()+6)%7;
+  const gridEnd=new Date(last);gridEnd.setDate(last.getDate()+(6-lastDow));
+  const days=[];
+  const cur=new Date(gridStart);
+  while(cur<=gridEnd){
+    days.push(new Date(cur));
+    cur.setDate(cur.getDate()+1);
+  }
+  return days;
+}
+
+/* Klick auf einen Kalendertag (Tagesansicht) oder eine Wochenzeile
+   (Wochenansicht): bei genau einer Session an dem Tag wird direkt abgehakt
+   (Toggle "durchgeführt"). Bei mehreren Sessions oder in der Wochenansicht
+   wird stattdessen zur Liste gesprungen und dort kurz hervorgehoben, damit
+   gezielt der richtige Eintrag abgehakt werden kann. */
+function jumpToSessRows(predicate,emptyMsg){
+  const list=$('h-list');
+  const rows=[...list.querySelectorAll('.sess-row')].filter(r=>predicate(r.dataset.day));
+  // Vorherige Hervorhebungen entfernen, damit ein erneuter Tap die Animation
+  // sauber neu startet statt nichts sichtbar zu verändern.
+  list.querySelectorAll('.sess-row.jump-highlight').forEach(r=>r.classList.remove('jump-highlight'));
+  list.querySelectorAll('.cal-tap-empty').forEach(n=>n.remove());
+  if(rows.length===0){
+    const hint=document.createElement('div');
+    hint.className='cal-tap-empty';
+    hint.textContent=emptyMsg;
+    list.prepend(hint);
+    list.scrollTo({top:0,behavior:'smooth'});
+    setTimeout(()=>{hint.remove();},1800);
+    return;
+  }
+  rows.forEach(r=>{
+    // reflow erzwingen, damit die Animation bei wiederholtem Tap neu startet
+    void r.offsetWidth;
+    r.classList.add('jump-highlight');
+  });
+  rows[0].scrollIntoView({block:'center',behavior:'smooth'});
+  setTimeout(()=>rows.forEach(r=>r.classList.remove('jump-highlight')),1500);
+}
+function onCalDayTap(dayK){
+  // Bug-Fix: Tage am Rand des Monatsrasters (.outside) gehören zum Vor- oder
+  // Folgemonat. Die Sessionsliste zeigt aber nur den aktuell angezeigten
+  // Monat – ohne diesen Wechsel würde ein Klick auf so einen Randtag immer
+  // fälschlich "Keine Session an diesem Tag" melden, selbst wenn dort eine
+  // Session existiert.
+  const tappedMonth=dayK.slice(0,7); // 'YYYY-MM'
+  const curMonth=monthKey(monthCursor);
+  if(tappedMonth!==curMonth){
+    const[y,m]=tappedMonth.split('-').map(Number);
+    monthCursor=new Date(y,m-1,1);
+    renderHist();
+  }
+  const list=$('h-list');
+  const rows=[...list.querySelectorAll('.sess-row')].filter(r=>r.dataset.day===dayK);
+  if(rows.length===1){
+    // Eindeutiger Treffer: direkt abhaken/Markierung umschalten.
+    toggleDone(parseInt(rows[0].dataset.idx));
+    return;
+  }
+  jumpToSessRows(d=>d===dayK,'Keine Session an diesem Tag');
+}
+function onCalWeekTap(startK,endK){
+  // Gleicher Bug-Fix wie bei onCalDayTap: eine Woche kann über einen
+  // Monatswechsel hinausgehen oder komplett im Nachbarmonat liegen (bei den
+  // Randwochen des Rasters). Wir wechseln zum Monat des Wochen-Starttags,
+  // damit die Liste die passenden Sessions überhaupt enthalten kann.
+  const tappedMonth=startK.slice(0,7);
+  const curMonth=monthKey(monthCursor);
+  if(tappedMonth!==curMonth){
+    const[y,m]=tappedMonth.split('-').map(Number);
+    monthCursor=new Date(y,m-1,1);
+    renderHist();
+  }
+  jumpToSessRows(d=>d>=startK&&d<=endK,'Keine Session in dieser Woche');
+}
+
+function renderCalMonth(hist,cursor){
+  const el=$('h-calmonth');
   const byDay={};
   hist.forEach(s=>{const k=dayKey(new Date(s.date));byDay[k]=(byDay[k]||0)+1;});
-  const{weeks,today}=get13Weeks();
-  let html='';
-  weeks.forEach(monday=>{
-    html+=`<div class="hkw" title="KW ${isoWeek(monday)}">${isoWeek(monday)}</div>`;
-    for(let dI=0;dI<7;dI++){
-      const d=new Date(monday);d.setDate(monday.getDate()+dI);
-      if(d>today){html+='<div class="hcell future"></div>';continue;}
-      const n=byDay[dayKey(d)]||0;
-      let cl='hcell';
-      if(n>=3)cl+=' l4';else if(n===2)cl+=' l3';else if(n===1)cl+=' l2';
-      html+=`<div class="${cl}" title="${dayKey(d)}: ${n} Session(en)"></div>`;
-    }
+  const today=new Date();today.setHours(0,0,0,0);
+  const days=getMonthGridDays(cursor);
+  const curMonth=cursor.getMonth();
+  let html='<div class="calwd">Mo</div><div class="calwd">Di</div><div class="calwd">Mi</div><div class="calwd">Do</div><div class="calwd">Fr</div><div class="calwd">Sa</div><div class="calwd">So</div>';
+  days.forEach(d=>{
+    const outside=d.getMonth()!==curMonth;
+    const isFuture=d>today;
+    const k=dayKey(d);
+    const n=byDay[k]||0;
+    let cl='hcell calcell';
+    if(outside)cl+=' outside';
+    if(isFuture)cl+=' future';
+    else if(n>=3)cl+=' l4';else if(n===2)cl+=' l3';else if(n===1)cl+=' l2';
+    if(k===dayKey(today))cl+=' istoday';
+    // Anklickbar: jeder vergangene/heutige Tag, egal ob mit oder ohne Session
+    // (Tage ohne Session zeigen einen kurzen Hinweis statt zu springen).
+    const clickable=!isFuture;
+    if(clickable)cl+=' clickable';
+    const attr=clickable?` onclick="onCalDayTap('${k}')"`:'';
+    html+=`<div class="${cl}" data-day="${k}" title="${k}: ${n} Session(en)"${attr}><span class="caldnum">${d.getDate()}</span></div>`;
   });
   el.innerHTML=html;
 }
 
-function renderHeatmapWeeks(hist){
-  const el=$('h-heatmap-week');
-  // Beide Lookups (Sessions/Tag und AUMs/Tag) einmalig in einem Durchlauf aufbauen,
-  // statt hist pro Tag der 13 Wochen erneut komplett zu durchsuchen (war O(Wochen*Tage*hist.length)).
+function renderCalWeeks(hist,cursor){
+  const el=$('h-calweeks');
   const byDay={},aumByDay={};
   hist.forEach(s=>{
     const k=dayKey(new Date(s.date));
     byDay[k]=(byDay[k]||0)+1;
     aumByDay[k]=(aumByDay[k]||0)+s.count;
   });
-  const{weeks,today}=get13Weeks();
+  const today=new Date();today.setHours(0,0,0,0);
+  const days=getMonthGridDays(cursor);
+  const weeks=[];
+  for(let i=0;i<days.length;i+=7)weeks.push(days.slice(i,i+7));
   let html='';
-  weeks.forEach(monday=>{
-    html+=`<div class="hkw" title="KW ${isoWeek(monday)}">${isoWeek(monday)}</div>`;
-    if(monday>today){html+='<div class="hcell future"></div>';return;}
-    let daysPracticed=0,aumSum=0;
-    for(let dI=0;dI<7;dI++){
-      const d=new Date(monday);d.setDate(monday.getDate()+dI);
-      if(d>today)continue;
+  weeks.forEach(week=>{
+    const monday=week[0];
+    let daysPracticed=0,aumSum=0,anyFuture=false,allFuture=true;
+    week.forEach(d=>{
+      if(d>today){anyFuture=true;return;}
+      allFuture=false;
       const k=dayKey(d);
-      if(byDay[k]){daysPracticed++;}
+      if(byDay[k])daysPracticed++;
       aumSum+=aumByDay[k]||0;
-    }
-    let cl='hcell';
-    if(daysPracticed>=5)cl+=' l4';else if(daysPracticed>=3)cl+=' l3';else if(daysPracticed>=1)cl+=' l2';
-    html+=`<div class="${cl}" title="KW ${isoWeek(monday)}: ${daysPracticed} Tag(e) geübt, ${aumSum} AUMs"></div>`;
+    });
+    let cl='hcell calweekcell';
+    if(allFuture)cl+=' future';
+    else if(daysPracticed>=5)cl+=' l4';else if(daysPracticed>=3)cl+=' l3';else if(daysPracticed>=1)cl+=' l2';
+    const clickable=!allFuture;
+    if(clickable)cl+=' clickable';
+    const wk=isoWeek(monday);
+    const startKey=dayKey(monday),endKey=dayKey(week[week.length-1]);
+    const attr=clickable?` onclick="onCalWeekTap('${startKey}','${endKey}')"`:'';
+    html+=`<div class="calweekrow">
+      <div class="calweeklbl">KW ${wk}</div>
+      <div class="${cl}" title="KW ${wk}: ${daysPracticed} Tag(e) geübt, ${aumSum} AUMs"${attr}>
+        <span class="calweektxt">${allFuture?'–':daysPracticed+' Tage · '+aumSum+' AUM'}</span>
+      </div>
+    </div>`;
   });
   el.innerHTML=html;
 }
@@ -1020,8 +1370,9 @@ try{histView=localStorage.getItem('aumHistView')||'days';}catch(e){}
 function setHistView(v){
   histView=v;
   try{localStorage.setItem('aumHistView',v);}catch(e){}
-  $('h-heatmap').classList.toggle('hidden',v!=='days');
-  $('h-heatmap-week').classList.toggle('hidden',v!=='weeks');
+  idbSet('aumHistView',v);
+  $('h-calmonth').classList.toggle('hidden',v!=='days');
+  $('h-calweeks').classList.toggle('hidden',v!=='weeks');
   $('hv-days').classList.toggle('active',v==='days');
   $('hv-weeks').classList.toggle('active',v==='weeks');
 }
@@ -1055,14 +1406,56 @@ function renderChart(hist){
   </div>`;
 }
 
-function renderList(hist){
+function renderLenBars(hist){
+  const el=$('len-bars');
+  const sorted=[...hist].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const last=sorted.find(s=>Array.isArray(s.durations)&&s.durations.length>0);
+  $('len-sess-pick').textContent='';
+  if(!last){
+    el.innerHTML='<div class="chart-empty">Noch keine Einzel-AUM-Längen aufgezeichnet – nach der nächsten Session erscheinen hier die Längen jedes AUMs.</div>';
+    $('len-min').textContent='–';$('len-max').textContent='–';$('len-avg').textContent='–';
+    return;
+  }
+  const d=new Date(last.date);
+  $('len-sess-pick').textContent=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'});
+  const durs=last.durations;
+  const mx=Math.max(...durs);
+  const W=280,barGap=3;
+  const barW=Math.max(3,(W-barGap*(durs.length-1))/durs.length);
+  const H=110,PAD=6;
+  const bars=durs.map((v,i)=>{
+    const h=Math.max(2,(v/mx)*(H-2*PAD));
+    const x=i*(barW+barGap);
+    const y=H-PAD-h;
+    const col=v>=avgDurOf(durs)?'#40d090':'#534AB7';
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="1.5" fill="${col}"><title>AUM ${i+1}: ${v.toFixed(1)}s</title></rect>`;
+  }).join('');
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">${bars}</svg>
+  <div style="display:flex;justify-content:space-between;font-size:10px;color:#505080;margin-top:4px">
+    <span>AUM 1</span><span>${durs.length} AUMs gesamt</span><span>AUM ${durs.length}</span>
+  </div>`;
+  $('len-min').textContent=Math.min(...durs).toFixed(1);
+  $('len-max').textContent=Math.max(...durs).toFixed(1);
+  $('len-avg').textContent=avgDurOf(durs).toFixed(1);
+}
+function avgDurOf(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;}
+
+function renderLengths(){
+  const hist=loadHist();
+  renderLenBars(hist);
+  renderChart(hist);
+}
+
+function renderList(hist,cursor){
   const el=$('h-list');
-  if(hist.length===0){el.innerHTML='<div class="chart-empty">Noch keine Sessions aufgezeichnet</div>';return;}
-  // Sortierte Kopie mit Original-Index merken
-  const sorted=[...hist]
-    .map((s,i)=>({s,i}))
-    .sort((a,b)=>new Date(b.s.date)-new Date(a.s.date))
-    .slice(0,25);
+  const inMonth=hist.filter(s=>monthKey(new Date(s.date))===monthKey(cursor));
+  $('h-list-month').textContent='· '+MONTH_NAMES[cursor.getMonth()]+' '+cursor.getFullYear();
+  if(inMonth.length===0){el.innerHTML='<div class="chart-empty">Keine Sessions in diesem Monat</div>';return;}
+  // Sortierte Kopie mit Original-Index (im Gesamt-hist-Array) merken, damit
+  // toggleDone() weiterhin den richtigen Eintrag trifft.
+  const sorted=inMonth
+    .map(s=>({s,i:hist.indexOf(s)}))
+    .sort((a,b)=>new Date(b.s.date)-new Date(a.s.date));
 
   el.innerHTML='';
   sorted.forEach(({s,i})=>{
@@ -1074,6 +1467,8 @@ function renderList(hist){
 
     const row=document.createElement('div');
     row.className='sess-row'+(isManual?' sess-manual':'');
+    row.dataset.day=dayKey(d);
+    row.dataset.idx=i;
 
     const info=document.createElement('div');
     info.style.flex='1';
@@ -1118,19 +1513,29 @@ function renderHist(){
   const hist=loadHist();
   const streaks=computeStreaks(hist);
   $('h-streak').textContent=streaks.current;
-  $('h-best').textContent=streaks.best;
+  $('h-best-inline').textContent=streaks.best>streaks.current?'Beste '+streaks.best:'';
   $('h-sessions').textContent=hist.length;
-  const totalAum=hist.reduce((a,s)=>a+s.count,0);
-  const totalSec=hist.reduce((a,s)=>a+s.totalSec,0);
-  const withDur=hist.filter(s=>s.avgDur>0);
+
+  // Gesamt-Kacheln zeigen jetzt die Werte des angezeigten Monats statt aller
+  // Zeiten – das passt zur Monatsansicht und bleibt damit konsistent lesbar.
+  const inMonth=hist.filter(s=>monthKey(new Date(s.date))===monthKey(monthCursor));
+  const totalAum=inMonth.reduce((a,s)=>a+s.count,0);
+  const totalSec=inMonth.reduce((a,s)=>a+s.totalSec,0);
+  const withDur=inMonth.filter(s=>s.avgDur>0);
   const avgAll=withDur.length?withDur.reduce((a,s)=>a+s.avgDur,0)/withDur.length:0;
   $('h-totalaum').textContent=totalAum;
-  $('h-totaltime').textContent=Math.round(totalSec/60);
+  // Minuten/Monat nicht mehr als eigene Kachel (Platzersparnis), bleibt aber
+  // als Tooltip auf der AUMs-Kachel erhalten statt komplett zu verschwinden.
+  $('h-totalaum').parentElement.title=Math.round(totalSec/60)+' Min. diesen Monat';
   $('h-avgall').textContent=avgAll?avgAll.toFixed(1):'–';
-  renderHeatmap(hist);
-  renderHeatmapWeeks(hist);
-  renderChart(hist);
-  renderList(hist);
+
+  $('month-label').textContent=MONTH_NAMES[monthCursor.getMonth()]+' '+monthCursor.getFullYear();
+  const now=new Date();
+  $('month-next').disabled=(monthCursor.getFullYear()===now.getFullYear()&&monthCursor.getMonth()===now.getMonth());
+
+  renderCalMonth(hist,monthCursor);
+  renderCalWeeks(hist,monthCursor);
+  renderList(hist,monthCursor);
   setHistView(histView);
 }
 
@@ -1160,11 +1565,12 @@ function switchTab(name){
   if(name!=='settings'&&hasUnsavedSettings()){
     if(!confirm('Ungespeicherte Änderungen an den Einstellungen verwerfen?'))return;
   }
-  ['counter','hist','settings'].forEach(n=>{
+  ['counter','hist','lengths','settings'].forEach(n=>{
     $('screen-'+n).classList.toggle('active',n===name);
     $('nav-'+n).classList.toggle('active',n===name);
   });
   if(name==='hist') renderHist();
+  if(name==='lengths') renderLengths();
   if(name==='settings') applySettingsToInputs();
 }
 
@@ -1178,13 +1584,25 @@ function exportHist(){
   URL.revokeObjectURL(url);
 }
 
+let toastTimer=null;
+function toast(msg){
+  const el=document.getElementById('globaltoast');
+  if(!el)return;
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),1800);
+}
+
 function toggleDone(idx){
   const hist=loadHist();
-  if(idx<0||idx>=hist.length){flash('Eintrag nicht gefunden','#E24B4A');return;}
+  if(!Number.isInteger(idx)||idx<0||idx>=hist.length){flash('Eintrag nicht gefunden','#E24B4A');toast('Eintrag nicht gefunden');return;}
   hist[idx]={...hist[idx],done:!hist[idx].done};
   saveHistArr(hist);
   renderHist();
-  flash(hist[idx].done?'Als durchgeführt markiert ✓':'Markierung entfernt','#40d090');
+  const msg=hist[idx].done?'Als durchgeführt markiert ✓':'Markierung entfernt';
+  flash(msg,'#40d090');
+  toast(msg);
 }
 
 function addManualSession(){
@@ -1215,13 +1633,17 @@ function addManualSession(){
   };
   hist.push(newEntry);
   saveHistArr(hist);
+  // Zum Monat der neu eingetragenen Session springen, damit sie sofort sichtbar
+  // ist (sonst könnte sie im aktuell angezeigten Monat "unsichtbar" bleiben).
+  monthCursor=new Date(practiceDate.getFullYear(),practiceDate.getMonth(),1);
   renderHist();
   flash('Manuelle Praxis eingetragen ✓','#40d090');
 }
 
 function clearHist(){
   if(!confirm('Gesamten Praxis-Verlauf wirklich löschen? Das kann nicht rückgängig gemacht werden.'))return;
-  localStorage.removeItem(HIST_KEY);
+  try{localStorage.removeItem(HIST_KEY);}catch(e){}
+  idbOpen().then(db=>{if(db){try{db.transaction('kv','readwrite').objectStore('kv').delete(HIST_KEY);}catch(e){}}});
   renderHist();
   flash('Verlauf gelöscht','#E24B4A');
 }
