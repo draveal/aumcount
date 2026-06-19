@@ -249,24 +249,33 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .add-manual-btn:active{background:rgba(83,74,183,0.1)}
 .add-manual-btn.compact{width:auto;flex:1;margin-top:0;white-space:nowrap}
 
-/* settings tab */
-.set-section{width:100%;margin-top:14px}
-.set-h{font-size:11px;color:#505080;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
-.set-card{background:#181830;border-radius:14px;padding:2px 14px}
-.set-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1e1e38}
+/* settings tab — kompakte einzeilige Variante: Label+Sub in einer Zeile,
+   weniger Innenabstand pro Zeile, damit der ganze Tab ohne/mit minimalem
+   Scrollen passt. */
+.set-section{width:100%;margin-top:10px}
+.set-h{font-size:11px;color:#505080;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px}
+.set-card{background:#181830;border-radius:14px;padding:0 14px}
+.set-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #1e1e38;min-height:34px}
 .set-row:last-child{border-bottom:none}
-.set-lbl{font-size:13px;color:#e8eaff}
-.set-sub{font-size:10px;color:#505080;margin-top:1px}
-.set-input{width:60px;text-align:center;background:#0f0f24;border:1px solid #2a2a4a;border-radius:8px;color:#e8eaff;font-size:13px;padding:5px 4px}
+.set-lbl{font-size:12.5px;color:#e8eaff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:baseline;gap:6px;min-width:0}
+.set-lbl .set-sub-inline{font-size:10px;color:#505080;font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.set-input{width:52px;text-align:center;background:#0f0f24;border:1px solid #2a2a4a;border-radius:8px;color:#e8eaff;font-size:13px;padding:5px 4px;flex-shrink:0}
 .set-input:focus{outline:none;border-color:#534AB7}
 
-.toggle{width:44px;height:25px;border-radius:14px;background:#2a2a4a;position:relative;cursor:pointer;flex-shrink:0;transition:background 0.25s}
-.toggle.on{background:#40d090}
-.toggle .knob{width:19px;height:19px;border-radius:50%;background:#e8eaff;position:absolute;top:3px;left:3px;transition:left 0.25s}
-.toggle.on .knob{left:22px}
+/* Stepper: − [Eingabefeld] + — für Werte, die per Schalter statt Tippen
+   angepasst werden sollen (z.B. Mindestdauer). */
+.stepper{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.stepper button{width:25px;height:25px;border-radius:8px;background:#0f0f24;border:1px solid #2a2a4a;color:#AFA9EC;font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0;padding:0}
+.stepper button:active{background:#252548}
+.stepper .set-input{width:38px;padding:5px 2px}
 
-.set-save{width:100%;padding:12px;border-radius:14px;border:none;background:#534AB7;color:#fff;font-size:14px;font-weight:500;cursor:pointer;margin-top:14px}
-.set-note{font-size:10px;color:#505080;text-align:center;margin-top:8px;padding-bottom:6px}
+.toggle{width:40px;height:23px;border-radius:14px;background:#2a2a4a;position:relative;cursor:pointer;flex-shrink:0;transition:background 0.25s}
+.toggle.on{background:#40d090}
+.toggle .knob{width:17px;height:17px;border-radius:50%;background:#e8eaff;position:absolute;top:3px;left:3px;transition:left 0.25s}
+.toggle.on .knob{left:20px}
+
+.set-save{width:100%;padding:11px;border-radius:14px;border:none;background:#534AB7;color:#fff;font-size:14px;font-weight:500;cursor:pointer;margin-top:12px}
+.set-note{font-size:10px;color:#505080;text-align:center;margin-top:6px;padding-bottom:4px}
 
 /* Globaler Toast: tab-unabhängiges, kurzes Feedback (z.B. beim Abhaken einer
    Session direkt aus dem Kalender). #sig existiert nur im Counter-Tab, daher
@@ -476,20 +485,24 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
       <div class="set-h">Zeiten</div>
       <div class="set-card">
         <div class="set-row">
-          <div><div class="set-lbl">Vorbereitung</div><div class="set-sub">Minuten vor dem Chanten</div></div>
+          <div class="set-lbl">Vorbereitung <span class="set-sub-inline">Min. vor dem Chanten</span></div>
           <input type="number" min="0" max="60" class="set-input" id="set-prep" value="7">
         </div>
         <div class="set-row">
-          <div><div class="set-lbl">Chant-Dauer</div><div class="set-sub">geplante Sing-Phase in Minuten</div></div>
+          <div class="set-lbl">Chant-Dauer <span class="set-sub-inline">geplante Sing-Phase, Min.</span></div>
           <input type="number" min="1" max="120" class="set-input" id="set-chant" value="7">
         </div>
         <div class="set-row">
-          <div><div class="set-lbl">Ziel-Anzahl</div><div class="set-sub">AUMs pro Praxis</div></div>
+          <div class="set-lbl">Ziel-Anzahl <span class="set-sub-inline">AUMs pro Praxis</span></div>
           <input type="number" min="1" max="500" class="set-input" id="set-goal" value="21">
         </div>
         <div class="set-row">
-          <div><div class="set-lbl">Mindestdauer</div><div class="set-sub">Sekunden, ab wann ein Ton zählt</div></div>
-          <input type="number" min="1" max="20" class="set-input" id="set-mindur" value="5">
+          <div class="set-lbl">Mindestdauer <span class="set-sub-inline">Sek., ab wann ein Ton zählt</span></div>
+          <div class="stepper">
+            <button type="button" aria-label="Mindestdauer verringern" onclick="stepMinDur(-1)">−</button>
+            <input type="number" min="1" max="20" class="set-input" id="set-mindur" value="5">
+            <button type="button" aria-label="Mindestdauer erhöhen" onclick="stepMinDur(1)">+</button>
+          </div>
         </div>
       </div>
     </div>
@@ -498,16 +511,20 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
       <div class="set-h">Benachrichtigung</div>
       <div class="set-card">
         <div class="set-row">
-          <div><div class="set-lbl">Erinnerung bei Stille</div><div class="set-sub">Gong, wenn lange nicht gesungen wurde</div></div>
+          <div class="set-lbl">Erinnerung bei Stille <span class="set-sub-inline">Gong bei langer Pause</span></div>
           <div class="toggle on" id="tog-warn" onclick="toggleSetting('warn')"><div class="knob"></div></div>
         </div>
         <div class="set-row">
-          <div><div class="set-lbl">Stille-Schwelle</div><div class="set-sub">Sekunden bis zur Erinnerung</div></div>
+          <div class="set-lbl">Stille-Schwelle <span class="set-sub-inline">Sek. bis zur Erinnerung</span></div>
           <input type="number" min="10" max="600" class="set-input" id="set-warn" value="60">
         </div>
         <div class="set-row">
-          <div><div class="set-lbl">Bonus-Ton</div><div class="set-sub">Klang bei jedem AUM über das Ziel hinaus</div></div>
+          <div class="set-lbl">Bonus-Ton <span class="set-sub-inline">Klang über das Ziel hinaus</span></div>
           <div class="toggle on" id="tog-bonus" onclick="toggleSetting('bonus')"><div class="knob"></div></div>
+        </div>
+        <div class="set-row">
+          <div class="set-lbl">Gong pro AUM <span class="set-sub-inline">kurzer Gong bei jedem AUM</span></div>
+          <div class="toggle on" id="tog-eachgong" onclick="toggleSetting('eachgong')"><div class="knob"></div></div>
         </div>
       </div>
     </div>
@@ -640,7 +657,7 @@ let CIRC1=0, CIRC2=0;
 
 /* ===== Einstellungen (persistiert in localStorage) ===== */
 const SET_KEY='aumSettings';
-const DEFAULT_SET={prepMin:7,chantMin:7,goal:21,minDur:5,warnSec:60,warnOn:true,bonusOn:true};
+const DEFAULT_SET={prepMin:7,chantMin:7,goal:21,minDur:5,warnSec:60,warnOn:true,bonusOn:true,eachGongOn:true};
 let SET={...DEFAULT_SET};
 
 function loadSettings(){
@@ -666,9 +683,17 @@ function applySettingsToInputs(){
   $('set-warn').value=SET.warnSec;
   $('tog-warn').classList.toggle('on',SET.warnOn);
   $('tog-bonus').classList.toggle('on',SET.bonusOn);
+  $('tog-eachgong').classList.toggle('on',SET.eachGongOn);
+}
+function stepMinDur(delta){
+  const inp=$('set-mindur');
+  let v=parseInt(inp.value);
+  if(!Number.isFinite(v))v=SET.minDur;
+  v=Math.min(20,Math.max(1,v+delta));
+  inp.value=v;
 }
 function toggleSetting(key){
-  const el=key==='warn'?$('tog-warn'):$('tog-bonus');
+  const el=key==='warn'?$('tog-warn'):key==='bonus'?$('tog-bonus'):$('tog-eachgong');
   el.classList.toggle('on');
 }
 function saveSettings(){
@@ -684,6 +709,7 @@ function saveSettings(){
   SET.warnSec=clamp($('set-warn').value,10,600,60);
   SET.warnOn=$('tog-warn').classList.contains('on');
   SET.bonusOn=$('tog-bonus').classList.contains('on');
+  SET.eachGongOn=$('tog-eachgong').classList.contains('on');
   // SET ist ab hier bereits aktualisiert, die laufende Sitzung nutzt also in jedem
   // Fall die neuen Werte – auch wenn das Schreiben in localStorage unten fehlschlägt.
   let persisted=true;
@@ -817,6 +843,29 @@ function beep(ff,dd){
   dd.forEach((t,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=ff[i]||ff[0];const s=actx.currentTime+t/1000;g.gain.setValueAtTime(0.35,s);g.gain.exponentialRampToValueAtTime(0.001,s+0.28);o.start(s);o.stop(s+0.3)});
 }
 
+// Kurzer, schneller Gong für jedes einzelne AUM (nur 3 Teiltöne, kurzer
+// Ausklang ~0.5s) – im Gegensatz zum langen Gong bei Zielerreichung, der
+// hier zu lang wäre, wenn schnell hintereinander gesungen wird.
+function shortGong(base=300){
+  if(!actx)return;
+  const partials=[1,2.4,3.0];
+  const now=actx.currentTime;
+  partials.forEach((mult,i)=>{
+    const o=actx.createOscillator();
+    const g=actx.createGain();
+    o.type='sine';
+    o.frequency.value=base*mult;
+    o.connect(g);g.connect(actx.destination);
+    const peak=0.3/(i+1);
+    const dur=0.5-i*0.1;
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(peak,now+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0005,now+Math.max(dur,0.2));
+    o.start(now);
+    o.stop(now+Math.max(dur,0.2)+0.05);
+  });
+}
+
 function showGoal(){
   if(goalShown)return;
   goalShown=true;
@@ -916,6 +965,7 @@ function aloop(){
             updateStats(dur);
             updateProgress();
             dots();
+            if(SET.eachGongOn)shortGong();
             if(cnt===GOALN()) showGoal();
             else if(cnt>GOALN()){if(SET.bonusOn)beep([784,659],[0,180]);flash('AUM #'+cnt+' — Bonus!','#AFA9EC');}
             else flash('AUM #'+cnt,'#40d090');
@@ -1556,7 +1606,8 @@ function hasUnsavedSettings(){
     ||numChanged($('set-mindur').value,SET.minDur)
     ||numChanged($('set-warn').value,SET.warnSec)
     ||$('tog-warn').classList.contains('on')!==SET.warnOn
-    ||$('tog-bonus').classList.contains('on')!==SET.bonusOn;
+    ||$('tog-bonus').classList.contains('on')!==SET.bonusOn
+    ||$('tog-eachgong').classList.contains('on')!==SET.eachGongOn;
 }
 function switchTab(name){
   // Ohne diese Prüfung wirkt ein Toggle-Schalter beim Zurückkommen zum Tab so,
