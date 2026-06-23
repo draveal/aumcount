@@ -161,13 +161,19 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 
 /* Monatsraster: 7 Spalten x (Wochentagskopf + bis zu 6 Wochen), feste, kompakte
    Zellengröße, damit der ganze Monat ohne Scrollen Platz findet. */
-.calmonth{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax(0,1fr);gap:3px;width:100%;height:168px}
+/* Monatsraster mit quadratischen Tageszellen (1:1). Keine feste Höhe mehr – die
+   Zellhöhe ergibt sich aus der Spaltenbreite (aspect-ratio:1). max-width hält die
+   Kästchen auf breiten Web-Bildschirmen handlich, statt sie riesig zu strecken;
+   auf Mobil füllt das Raster die Breite und ergibt fingerfreundliche Felder. */
+.calmonth{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;width:100%;max-width:440px;margin:0 auto}
 .calmonth.hidden{display:none}
-.calwd{font-size:9px;color:#3a3a5c;text-align:center;padding-bottom:2px}
-.calcell{border-radius:6px;position:relative;display:flex;align-items:flex-start;justify-content:flex-end;padding:2px 3px;min-height:0;cursor:default;-webkit-tap-highlight-color:transparent;transition:transform 0.1s,box-shadow 0.15s}
+.calwd{font-size:10px;color:#3a3a5c;text-align:center;padding-bottom:2px}
+.calcell{border-radius:7px;position:relative;display:flex;align-items:flex-start;justify-content:flex-end;padding:2px 4px;min-height:0;cursor:default;-webkit-tap-highlight-color:transparent;transition:transform 0.1s,box-shadow 0.15s}
+/* Quadratisch erzwingen: zwei Klassen -> höhere Spezifität als .hcell{height:100%} */
+.calcell.hcell{aspect-ratio:1/1;height:auto;width:100%}
 .calcell.outside{opacity:0.25}
 .calcell.istoday{box-shadow:inset 0 0 0 1.5px #AFA9EC}
-.caldnum{font-size:9px;color:#7080b0;font-weight:500}
+.caldnum{font-size:11px;color:#7080b0;font-weight:500}
 .calcell.l2 .caldnum,.calcell.l3 .caldnum,.calcell.l4 .caldnum{color:#0a0a18}
 .calcell.clickable{cursor:pointer;touch-action:manipulation}
 .calcell.clickable:active{transform:scale(0.92)}
@@ -198,6 +204,25 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .hcell.l2{background:#3a35a0}
 .hcell.l3{background:#534AB7}
 .hcell.l4{background:#40d090}
+/* Manuell als "Praxis durchgeführt" markierter Tag (shambhaviDays). Deutlich
+   sichtbar: kräftiges Grün mit Leuchtring, fette dunkle Tageszahl und ein klar
+   erkennbares Häkchen – hebt sich eindeutig von den session-basierten Stufen
+   (l2–l4) ab, auch wenn l4 ebenfalls grünlich ist. */
+.hcell.daydone{
+  background:linear-gradient(135deg,#4be0a0,#2bb87a);
+  box-shadow:0 0 0 2px #6effc0, 0 0 10px rgba(64,208,144,0.7);
+}
+.calcell.daydone{z-index:1}
+.calcell.daydone .caldnum{color:#06241a;font-weight:700}
+/* Großes, gut sichtbares Häkchen unten links in der Zelle */
+.calcell.daydone::before{
+  content:'✓';position:absolute;left:2px;bottom:0;
+  font-size:13px;line-height:1;font-weight:900;color:#06241a;
+  pointer-events:none;
+}
+/* Kurzer "Pop" beim Abhaken, damit der Tag aktiv aufleuchtet */
+@keyframes dayDonePop{0%{transform:scale(0.6);opacity:0.4}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+.calcell.daydone{animation:dayDonePop 0.28s ease-out}
 
 .chart-wrap{width:100%;background:#181830;border-radius:12px;padding:10px}
 .chart-empty{font-size:12px;color:#505080;text-align:center;padding:16px 0}
@@ -529,6 +554,21 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
       </div>
     </div>
 
+    <div class="set-section">
+      <div class="set-h">Konto &amp; Synchronisation</div>
+      <div class="set-card">
+        <div class="set-row">
+          <div class="set-lbl" id="acc-status" style="white-space:normal">Nur lokal gespeichert</div>
+        </div>
+        <div class="set-row">
+          <div class="set-lbl set-sub-inline" id="acc-sub" style="white-space:normal;font-size:10px;color:#505080">Anmelden, um Verlauf auf mehreren Geräten zu behalten</div>
+        </div>
+      </div>
+      <button class="set-save" id="btn-google" style="background:#fff;color:#1a1a2e;display:none" onclick="signInGoogle()">Mit Google anmelden</button>
+      <button class="set-save" id="btn-signout" style="background:#2a2a4a;display:none" onclick="signOutUser()">Abmelden</button>
+      <div class="set-note" id="sync-status">Lokaler Modus aktiv</div>
+    </div>
+
     <button class="set-save" onclick="saveSettings()">Einstellungen speichern</button>
     <div class="set-note" id="set-note">Wirkt sich auf die nächste Session aus</div>
     <div class="set-note" id="storage-diag" style="margin-top:2px">Speicher wird geprüft…</div>
@@ -555,8 +595,13 @@ const fmt=s=>{const t=Math.max(0,Math.floor(s));return String(Math.floor(t/60)).
  *         damit Daten auch erhalten bleiben, wenn localStorage blockiert/partitioniert
  *         ist (z.B. Safari privates Surfen, manche In-App-Browser). Diagnose-Hinweis
  *         im Einstellungen-Tab zeigt an, welcher Speicherweg tatsächlich funktioniert.
+ * 1.7.0 – Kalendertage in der Heatmap manuell als "Praxis durchgeführt" markierbar
+ *         (eigener Speicher shambhaviDays, grün mit Häkchen, Zukunft gesperrt).
+ *         Optionale Firebase-Synchronisation (Google-Login + Firestore) als
+ *         zusätzliche Schicht über localStorage – lokale Nutzung bleibt jederzeit
+ *         möglich, auch ohne Login oder ohne konfiguriertes Firebase.
  */
-const APP_VERSION='1.6.0';
+const APP_VERSION='1.7.0';
 
 /* ===== Persistenz-Schicht =====
  * localStorage ist synchron und schnell, wird daher weiter als primärer Speicher
@@ -710,10 +755,13 @@ function saveSettings(){
   SET.warnOn=$('tog-warn').classList.contains('on');
   SET.bonusOn=$('tog-bonus').classList.contains('on');
   SET.eachGongOn=$('tog-eachgong').classList.contains('on');
+  // Zeitstempel für die Cloud-Konfliktlösung "Cloud gewinnt, wenn updatedAt neuer".
+  SET.updatedAt=new Date().toISOString();
   // SET ist ab hier bereits aktualisiert, die laufende Sitzung nutzt also in jedem
   // Fall die neuen Werte – auch wenn das Schreiben in localStorage unten fehlschlägt.
   let persisted=true;
   persisted=persistSet(SET_KEY,JSON.stringify(SET));
+  cloud('saveSettings'); // zusätzlich in die Cloud, falls eingeloggt (sonst No-op)
   applySettingsToInputs(); // geclampte Werte ins UI zurückschreiben, falls Eingabe über die Grenzen ging
   if(persisted){
     $('set-note').textContent='Gespeichert ✓';
@@ -1184,7 +1232,7 @@ function saveSession(){
   const hist=loadHist();
   // Bug E: tot enthält Prep+Chant+Bonus. Im Verlauf interessiert nur die
   // Sing-Zeit (csec) sowie die Gesamtdauer. Beides speichern.
-  hist.push({
+  const entry={
     date:new Date().toISOString(),
     count:cnt,
     avgDur:avgDur||0,
@@ -1192,8 +1240,79 @@ function saveSession(){
     chantSec:csec,
     goalReached:cnt>=GOALN(),
     durations:durations.slice() // Einzel-AUM-Längen (Sek.) für den Längen-Tab
-  });
+  };
+  hist.push(entry);
   saveHistArr(hist);
+  // Zusätzlich (nur wenn eingeloggt) in die Cloud schreiben. Schlägt das fehl
+  // oder ist kein Login vorhanden, passiert nichts – die lokale Speicherung oben
+  // ist bereits erfolgt.
+  cloud('saveSession',entry);
+  cloud('saveDay',dayKey(new Date(entry.date)),buildDayDoc(dayKey(new Date(entry.date))));
+}
+
+/* ===== Manuelle Tages-Markierung (shambhaviDays) =====
+ * Unabhängig von erkannten AUM-Sessions kann jeder vergangene/heutige Tag in der
+ * Heatmap angetippt und als "Praxis durchgeführt" markiert werden. Eigene
+ * Speicherstruktur, damit der bestehende Session-Verlauf (aumHistory) unangetastet
+ * bleibt. Format: { "2026-06-23": {done:true,manual:true,updatedAt:"..."} }.
+ */
+const DAYS_KEY='shambhaviDays';
+function loadDays(){
+  try{
+    const raw=localStorage.getItem(DAYS_KEY);
+    if(!raw)return{};
+    try{return JSON.parse(raw)||{};}catch(e){return{};}
+  }catch(e){return{};}
+}
+function saveDays(days){
+  persistSet(DAYS_KEY,JSON.stringify(days));
+}
+function isDayDone(dayK){
+  const days=loadDays();
+  return !!(days[dayK]&&days[dayK].done);
+}
+function toggleDayDone(dayK){
+  // Zukunft darf nicht markiert werden.
+  const today=new Date();today.setHours(0,0,0,0);
+  const[y,m,d]=dayK.split('-').map(Number);
+  if(new Date(y,m-1,d)>today)return;
+  const days=loadDays();
+  const nowDone=!(days[dayK]&&days[dayK].done);
+  // Eintrag auch bei nowDone=false behalten (mit done:false), damit updatedAt für
+  // die Cloud-Konfliktlösung "neuester gewinnt" vergleichbar bleibt.
+  days[dayK]={done:nowDone,manual:true,updatedAt:new Date().toISOString()};
+  saveDays(days);
+  renderHist();
+  const msg=nowDone?'Tag als durchgeführt markiert ✓':'Markierung entfernt';
+  flash(msg,'#40d090');toast(msg);
+  cloud('saveDay',dayK,buildDayDoc(dayK));
+}
+
+// Aufbau eines Day-Dokuments für die Cloud: kombiniert die manuelle Markierung
+// mit den tatsächlichen Session-Zahlen des Tages.
+function buildDayDoc(dayK){
+  const hist=loadHist();
+  const sessions=hist.filter(s=>dayKey(new Date(s.date))===dayK);
+  const marks=loadDays();
+  const mark=marks[dayK];
+  return{
+    day:dayK,
+    done:!!(mark&&mark.done),
+    manual:!!(mark&&mark.manual),
+    sessionCount:sessions.length,
+    aumCount:sessions.reduce((a,s)=>a+(s.count||0),0)
+  };
+}
+
+// Kleiner Brücken-Helfer: ruft eine optionale Cloud-Funktion (vom Firebase-Modul
+// auf window.AUMCloud bereitgestellt) sicher auf. Ohne Firebase/Login ein No-op,
+// Fehler werden geschluckt, damit die lokale Nutzung nie abbricht.
+function cloud(fn,...args){
+  try{
+    if(window.AUMCloud&&typeof window.AUMCloud[fn]==='function'){
+      window.AUMCloud[fn](...args);
+    }
+  }catch(e){console.warn('cloud('+fn+')',e);}
 }
 
 function dayKey(d){ // lokales Datum, nicht UTC, damit Abend-Sessions nicht falsch zugeordnet werden
@@ -1310,26 +1429,19 @@ function jumpToSessRows(predicate,emptyMsg){
   setTimeout(()=>rows.forEach(r=>r.classList.remove('jump-highlight')),1500);
 }
 function onCalDayTap(dayK){
-  // Bug-Fix: Tage am Rand des Monatsrasters (.outside) gehören zum Vor- oder
-  // Folgemonat. Die Sessionsliste zeigt aber nur den aktuell angezeigten
-  // Monat – ohne diesen Wechsel würde ein Klick auf so einen Randtag immer
-  // fälschlich "Keine Session an diesem Tag" melden, selbst wenn dort eine
-  // Session existiert.
+  // Tippen auf einen Kalendertag schaltet die manuelle "Praxis durchgeführt"-
+  // Markierung dieses Tages um (shambhaviDays) – unabhängig davon, ob an dem Tag
+  // eine erkannte AUM-Session existiert. Zukünftige Tage sind nicht klickbar
+  // (in renderCalMonth ohne onclick gerendert) und toggleDayDone ignoriert sie
+  // zusätzlich defensiv.
+  // Randtag eines Nachbarmonats: zu dessen Monat wechseln, damit die markierte
+  // Zelle nach dem Re-Render auch sichtbar im aktiven Monatsraster liegt.
   const tappedMonth=dayK.slice(0,7); // 'YYYY-MM'
-  const curMonth=monthKey(monthCursor);
-  if(tappedMonth!==curMonth){
+  if(tappedMonth!==monthKey(monthCursor)){
     const[y,m]=tappedMonth.split('-').map(Number);
     monthCursor=new Date(y,m-1,1);
-    renderHist();
   }
-  const list=$('h-list');
-  const rows=[...list.querySelectorAll('.sess-row')].filter(r=>r.dataset.day===dayK);
-  if(rows.length===1){
-    // Eindeutiger Treffer: direkt abhaken/Markierung umschalten.
-    toggleDone(parseInt(rows[0].dataset.idx));
-    return;
-  }
-  jumpToSessRows(d=>d===dayK,'Keine Session an diesem Tag');
+  toggleDayDone(dayK);
 }
 function onCalWeekTap(startK,endK){
   // Gleicher Bug-Fix wie bei onCalDayTap: eine Woche kann über einen
@@ -1350,6 +1462,7 @@ function renderCalMonth(hist,cursor){
   const el=$('h-calmonth');
   const byDay={};
   hist.forEach(s=>{const k=dayKey(new Date(s.date));byDay[k]=(byDay[k]||0)+1;});
+  const marks=loadDays(); // manuelle Tages-Markierungen (shambhaviDays)
   const today=new Date();today.setHours(0,0,0,0);
   const days=getMonthGridDays(cursor);
   const curMonth=cursor.getMonth();
@@ -1359,17 +1472,20 @@ function renderCalMonth(hist,cursor){
     const isFuture=d>today;
     const k=dayKey(d);
     const n=byDay[k]||0;
+    const done=!!(marks[k]&&marks[k].done);
     let cl='hcell calcell';
     if(outside)cl+=' outside';
-    if(isFuture)cl+=' future';
-    else if(n>=3)cl+=' l4';else if(n===2)cl+=' l3';else if(n===1)cl+=' l2';
+    if(isFuture)cl+=' future';                 // Fall D: Zukunft, nicht anklickbar
+    else if(done)cl+=' daydone';               // Fall B/C: manuell erledigt -> grün
+    else if(n>=3)cl+=' l4';else if(n===2)cl+=' l3';else if(n===1)cl+=' l2'; // Fall A: Sessions
     if(k===dayKey(today))cl+=' istoday';
-    // Anklickbar: jeder vergangene/heutige Tag, egal ob mit oder ohne Session
-    // (Tage ohne Session zeigen einen kurzen Hinweis statt zu springen).
+    // Anklickbar: jeder vergangene/heutige Tag, egal ob mit oder ohne Session.
+    // Tippen schaltet die manuelle "durchgeführt"-Markierung um (toggleDayDone).
     const clickable=!isFuture;
     if(clickable)cl+=' clickable';
     const attr=clickable?` onclick="onCalDayTap('${k}')"`:'';
-    html+=`<div class="${cl}" data-day="${k}" title="${k}: ${n} Session(en)"${attr}><span class="caldnum">${d.getDate()}</span></div>`;
+    const title=`${k}: ${n} Session(en)`+(done?' · manuell erledigt':'');
+    html+=`<div class="${cl}" data-day="${k}" title="${title}"${attr}><span class="caldnum">${d.getDate()}</span></div>`;
   });
   el.innerHTML=html;
 }
@@ -1698,6 +1814,287 @@ function clearHist(){
   renderHist();
   flash('Verlauf gelöscht','#E24B4A');
 }
+
+/* ===== Brücke zum Firebase-Modul =====
+ * Das Firebase-Script läuft als type="module" in einem eigenen Scope und kann
+ * daher die obigen Funktionen/Variablen nicht direkt sehen. Wir stellen genau die
+ * benötigten Zugriffe als window.AUM_* bereit. Umgekehrt ruft der obige Code die
+ * Cloud-Funktionen nur über den cloud()-Helfer (window.AUMCloud) auf, der ohne
+ * Firebase/Login ein No-op ist – die lokale App funktioniert also unverändert,
+ * auch wenn das Modul gar nicht oder nur teilweise lädt.
+ */
+window.AUM_GET_HIST=()=>loadHist();
+window.AUM_SET_HIST=(arr)=>saveHistArr(arr);
+window.AUM_GET_DAYS=()=>loadDays();
+window.AUM_SET_DAYS=(d)=>saveDays(d);
+window.AUM_GET_SETTINGS=()=>({...SET});
+window.AUM_BUILD_DAY_DOC=(k)=>buildDayDoc(k);
+// Settings aus der Cloud übernehmen, aber nur wenn deren updatedAt neuer ist als
+// der lokale Stand ("Cloud gewinnt, wenn updatedAt neuer; sonst lokal behalten").
+window.AUM_MERGE_SETTINGS=(cloudSet,cloudMillis)=>{
+  const localMillis=SET.updatedAt?Date.parse(SET.updatedAt):0;
+  if(cloudMillis&&cloudMillis>localMillis){
+    const pick=(v,d)=>v===undefined||v===null?d:v;
+    SET={...SET,
+      prepMin:pick(cloudSet.prepMin,SET.prepMin),
+      chantMin:pick(cloudSet.chantMin,SET.chantMin),
+      goal:pick(cloudSet.goal,SET.goal),
+      minDur:pick(cloudSet.minDur,SET.minDur),
+      warnSec:pick(cloudSet.warnSec,SET.warnSec),
+      warnOn:pick(cloudSet.warnOn,SET.warnOn),
+      bonusOn:pick(cloudSet.bonusOn,SET.bonusOn),
+      eachGongOn:pick(cloudSet.eachGongOn,SET.eachGongOn),
+      updatedAt:new Date(cloudMillis).toISOString()
+    };
+    persistSet(SET_KEY,JSON.stringify(SET));
+    applySettingsToInputs();
+  }
+};
+// Nach einer Synchronisation die sichtbaren Ansichten neu aufbauen.
+window.AUM_RERENDER=()=>{
+  try{
+    if($('screen-hist').classList.contains('active'))renderHist();
+    if($('screen-lengths').classList.contains('active'))renderLengths();
+    if(!run)updateProgress();
+  }catch(e){console.warn('AUM_RERENDER',e);}
+};
+</script>
+
+<!-- ===== Firebase-Synchronisation (optional, zusätzlich zu localStorage) =====
+     Eigener Modul-Scope. Lädt das Firebase Web SDK (modular, v11) per CDN. Ist die
+     firebaseConfig nicht ausgefüllt oder kein Nutzer angemeldet, bleibt alles rein
+     lokal – kein bestehendes Verhalten wird verändert. -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, getDocs, collection, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+// ⚠ Platzhalter: bitte durch die echten Werte aus der Firebase Console ersetzen.
+const firebaseConfig = {
+  apiKey: "HIER_EINTRAGEN",
+  authDomain: "HIER_EINTRAGEN",
+  projectId: "HIER_EINTRAGEN",
+  storageBucket: "HIER_EINTRAGEN",
+  messagingSenderId: "HIER_EINTRAGEN",
+  appId: "HIER_EINTRAGEN"
+};
+
+let app=null, auth=null, db=null, currentUser=null, fbReady=false;
+
+const configMissing=()=>Object.values(firebaseConfig).some(v=>!v||String(v).startsWith('HIER_EINTRAGEN'));
+
+function setSyncStatus(msg,kind){
+  const el=document.getElementById('sync-status');
+  if(!el)return;
+  el.textContent=msg;
+  el.style.color=kind==='warn'?'#f09050':kind==='err'?'#E24B4A':kind==='ok'?'#40d090':'#505080';
+}
+
+function updateAuthUI(){
+  const status=document.getElementById('acc-status');
+  const sub=document.getElementById('acc-sub');
+  const btnG=document.getElementById('btn-google');
+  const btnO=document.getElementById('btn-signout');
+  if(!status||!sub||!btnG||!btnO)return;
+  if(currentUser){
+    status.textContent='Angemeldet als '+(currentUser.email||'Google-Konto');
+    status.style.color='#40d090';
+    sub.textContent='Synchronisation aktiv';
+    btnG.style.display='none';
+    btnO.style.display='';
+  } else {
+    status.textContent='Nur lokal gespeichert';
+    status.style.color='#e8eaff';
+    sub.textContent=configMissing()
+      ? 'Firebase noch nicht konfiguriert – App läuft lokal weiter'
+      : 'Anmelden, um Verlauf auf mehreren Geräten zu behalten';
+    btnG.style.display=configMissing()?'none':'';
+    btnO.style.display='none';
+  }
+}
+
+function initFirebase(){
+  updateAuthUI();
+  if(configMissing()){
+    setSyncStatus('Lokaler Modus – Firebase nicht konfiguriert','warn');
+    return;
+  }
+  try{
+    app=initializeApp(firebaseConfig);
+    auth=getAuth(app);
+    db=getFirestore(app);
+    fbReady=true;
+    // Ergebnis eines evtl. vorausgegangenen Redirect-Logins (Mobile/Capacitor).
+    getRedirectResult(auth).catch(()=>{});
+    onAuthStateChanged(auth, async (user)=>{
+      currentUser=user;
+      updateAuthUI();
+      if(user){
+        setSyncStatus('Synchronisiere…','info');
+        await syncAfterLogin();
+      } else {
+        setSyncStatus('Abgemeldet – nur lokal','info');
+      }
+    });
+  }catch(e){
+    console.warn('initFirebase',e);
+    fbReady=false;
+    setSyncStatus('Firebase-Init fehlgeschlagen – nur lokal','warn');
+  }
+}
+
+/* Login wird gekapselt, damit die Implementierung für Capacitor später
+   ausgetauscht werden kann (z.B. natives Google-Plugin statt Popup/Redirect). */
+async function signInGoogle(){
+  if(!fbReady){ setSyncStatus('Firebase nicht konfiguriert','warn'); return; }
+  try{
+    await signInWithPopup(auth, new GoogleAuthProvider());
+  }catch(e){
+    console.warn('signInWithPopup',e);
+    // Popups werden auf Mobile/WebView häufig blockiert -> Redirect als Fallback.
+    try{ await signInWithRedirect(auth, new GoogleAuthProvider()); }
+    catch(e2){ setSyncStatus('Anmeldung fehlgeschlagen: '+(e.message||e),'err'); }
+  }
+}
+async function signOutUser(){
+  if(!fbReady)return;
+  try{ await signOut(auth); }
+  catch(e){ setSyncStatus('Abmelden fehlgeschlagen','err'); }
+}
+
+/* ---- Firestore-Helfer ---- */
+const sessionId=(s)=>String(s&&s.date||'').replace(/[:.]/g,'-')||('s'+Date.now());
+function tsToMillis(ts){
+  if(!ts)return 0;
+  if(typeof ts.toMillis==='function')return ts.toMillis();        // Firestore Timestamp
+  if(typeof ts.seconds==='number')return ts.seconds*1000;          // serialisiert
+  const p=Date.parse(ts); return Number.isFinite(p)?p:0;           // ISO-String
+}
+const tsToIso=(ts)=>{const m=tsToMillis(ts);return m?new Date(m).toISOString():new Date().toISOString();};
+
+async function saveSessionToCloud(session){
+  if(!currentUser||!db||!session)return;
+  try{
+    await setDoc(doc(db,'users',currentUser.uid,'sessions',sessionId(session)),{
+      date:session.date,
+      count:session.count||0,
+      avgDur:session.avgDur||0,
+      totalSec:session.totalSec||0,
+      chantSec:session.chantSec||0,
+      goalReached:!!session.goalReached,
+      manual:!!session.manual,
+      done:!!session.done,
+      durations:Array.isArray(session.durations)?session.durations:[],
+      createdAt:serverTimestamp(),
+      updatedAt:serverTimestamp()
+    },{merge:true});
+  }catch(e){console.warn('saveSessionToCloud',e);}
+}
+async function saveDayToCloud(dayKey,data){
+  if(!currentUser||!db||!dayKey)return;
+  try{
+    await setDoc(doc(db,'users',currentUser.uid,'days',dayKey),{
+      day:dayKey,
+      done:!!(data&&data.done),
+      manual:!!(data&&data.manual),
+      sessionCount:(data&&data.sessionCount)||0,
+      aumCount:(data&&data.aumCount)||0,
+      updatedAt:serverTimestamp()
+    },{merge:true});
+  }catch(e){console.warn('saveDayToCloud',e);}
+}
+async function saveSettingsToCloud(){
+  if(!currentUser||!db)return;
+  try{
+    const s=window.AUM_GET_SETTINGS?window.AUM_GET_SETTINGS():null;
+    if(!s)return;
+    await setDoc(doc(db,'users',currentUser.uid,'settings','main'),{
+      prepMin:s.prepMin, chantMin:s.chantMin, goal:s.goal, minDur:s.minDur,
+      warnSec:s.warnSec, warnOn:s.warnOn, bonusOn:s.bonusOn, eachGongOn:s.eachGongOn,
+      updatedAt:serverTimestamp()
+    },{merge:true});
+  }catch(e){console.warn('saveSettingsToCloud',e);}
+}
+
+async function loadCloudData(){
+  if(!currentUser||!db)return null;
+  const out={sessions:[],days:{},settings:null};
+  try{
+    const sessSnap=await getDocs(collection(db,'users',currentUser.uid,'sessions'));
+    sessSnap.forEach(d=>out.sessions.push(d.data()));
+    const daysSnap=await getDocs(collection(db,'users',currentUser.uid,'days'));
+    daysSnap.forEach(d=>{const data=d.data();out.days[data.day||d.id]=data;});
+    const setSnap=await getDoc(doc(db,'users',currentUser.uid,'settings','main'));
+    if(setSnap.exists())out.settings=setSnap.data();
+  }catch(e){console.warn('loadCloudData',e);return null;}
+  return out;
+}
+
+/* Zusammenführen lokaler und Cloud-Daten.
+   Sessions: per eindeutiger id (aus date) dedupliziert.
+   Days: neuester updatedAt gewinnt. */
+function mergeLocalAndCloud(localHist, localDays, cloudData){
+  const byId={};
+  (localHist||[]).forEach(s=>{byId[sessionId(s)]=s;});
+  (cloudData.sessions||[]).forEach(s=>{const id=sessionId(s);if(!byId[id])byId[id]=s;});
+  const hist=Object.values(byId).sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+  const days={...(localDays||{})};
+  const cloudDays=cloudData.days||{};
+  Object.keys(cloudDays).forEach(k=>{
+    const c=cloudDays[k], l=days[k];
+    const ct=tsToMillis(c.updatedAt);
+    if(!l){ days[k]={done:!!c.done,manual:!!c.manual,updatedAt:tsToIso(c.updatedAt)}; return; }
+    const lt=Date.parse(l.updatedAt)||0;
+    if(ct>lt) days[k]={done:!!c.done,manual:!!c.manual,updatedAt:tsToIso(c.updatedAt)};
+  });
+  return {hist, days};
+}
+
+async function syncAfterLogin(){
+  if(!currentUser||!db)return;
+  try{
+    const localHist=window.AUM_GET_HIST?window.AUM_GET_HIST():[];
+    const localDays=window.AUM_GET_DAYS?window.AUM_GET_DAYS():{};
+    const cloudData=await loadCloudData();
+    if(!cloudData){ setSyncStatus('Cloud-Daten nicht ladbar – lokale Daten bleiben','warn'); return; }
+
+    const merged=mergeLocalAndCloud(localHist, localDays, cloudData);
+    // 1) Ergebnis lokal speichern
+    if(window.AUM_SET_HIST)window.AUM_SET_HIST(merged.hist);
+    if(window.AUM_SET_DAYS)window.AUM_SET_DAYS(merged.days);
+    // 2) Settings: Cloud gewinnt nur bei neuerem updatedAt
+    if(cloudData.settings&&window.AUM_MERGE_SETTINGS){
+      window.AUM_MERGE_SETTINGS(cloudData.settings, tsToMillis(cloudData.settings.updatedAt));
+    }
+    // 3) Zusammengeführtes Ergebnis in die Cloud zurückschreiben
+    for(const s of merged.hist){ await saveSessionToCloud(s); }
+    for(const k of Object.keys(merged.days)){
+      const d=window.AUM_BUILD_DAY_DOC?window.AUM_BUILD_DAY_DOC(k):merged.days[k];
+      await saveDayToCloud(k,d);
+    }
+    await saveSettingsToCloud();
+    // 4) Ansicht neu aufbauen
+    if(window.AUM_RERENDER)window.AUM_RERENDER();
+    setSyncStatus('Synchronisation aktiv ✓','ok');
+  }catch(e){
+    console.warn('syncAfterLogin',e);
+    setSyncStatus('Sync-Fehler – lokale Daten bleiben erhalten','warn');
+  }
+}
+
+// Funktionen für die onclick-Handler (globaler Scope) und für den cloud()-Helfer.
+window.signInGoogle=signInGoogle;
+window.signOutUser=signOutUser;
+window.AUMCloud={
+  saveSession:saveSessionToCloud,
+  saveDay:saveDayToCloud,
+  saveSettings:saveSettingsToCloud
+};
+
+initFirebase();
 </script>
 </body>
 </html>
