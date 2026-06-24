@@ -76,6 +76,26 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .rsub{font-size:clamp(10px,2.2vw,13px);color:#505080;margin-top:1px}
 .rtime2{font-size:clamp(11px,2.6vw,15px);color:#7080b0;margin-top:2px}
 
+/* Phasen-Anzeige: drei Segmente (Vorbereitung / Chanten / Nachklang), das
+   aktive Segment leuchtet in seiner eigenen Phasenfarbe auf. Macht auf einen
+   Blick sichtbar, in welcher Phase die Praxis gerade ist. */
+.phasebar{width:100%;display:flex;gap:6px}
+.phase-seg{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#505080;padding:7px 2px;border-radius:11px;background:#161628;border:1px solid rgba(255,255,255,0.05);transition:color .3s,background .3s,border-color .3s}
+.phase-seg .phase-dot{width:9px;height:9px;border-radius:50%;background:#2a2a4a;transition:background .3s,box-shadow .3s}
+.phase-seg.active{color:#fff;font-weight:600}
+.phase-seg.active[data-phase="p"]{background:rgba(55,138,221,0.16);border-color:#378ADD}
+.phase-seg.active[data-phase="p"] .phase-dot{background:#378ADD;box-shadow:0 0 9px #378ADD}
+.phase-seg.active[data-phase="c"]{background:rgba(29,158,117,0.18);border-color:#1D9E75}
+.phase-seg.active[data-phase="c"] .phase-dot{background:#1D9E75;box-shadow:0 0 9px #1D9E75}
+.phase-seg.active[data-phase="e"]{background:rgba(216,90,48,0.16);border-color:#D85A30}
+.phase-seg.active[data-phase="e"] .phase-dot{background:#D85A30;box-shadow:0 0 9px #D85A30}
+
+/* Korrektur-Knopf "Falsch gezählt": zieht die AUM-Anzahl um 1 zurück, falls ein
+   Fremdgeräusch fälschlich als AUM gewertet wurde. Nur während der Praxis sichtbar. */
+.count-correct{display:none;margin:6px auto 0;padding:6px 14px;border-radius:20px;border:1px solid rgba(240,160,60,0.35);background:rgba(240,160,60,0.08);color:#f0a850;font-size:12px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,transform .1s}
+.count-correct:active{transform:scale(0.95);background:rgba(240,160,60,0.18)}
+.count-correct.show{display:flex;align-items:center;gap:6px}
+
 /* big count */
 .aum-num{font-size:clamp(64px,17vw,108px);font-weight:500;color:#e8eaff;line-height:1;text-align:center;transition:color 0.4s}
 .aum-num.goal{color:#40d090}
@@ -112,10 +132,12 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .gb-txt{font-size:14px;font-weight:500;color:#40d090}
 .gb-sub{font-size:11px;color:#3a8f6f;margin-top:2px}
 
-.btn{width:100%;padding:clamp(11px,3.2vw,17px);border-radius:16px;border:none;font-size:clamp(15px,3.8vw,19px);font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;-webkit-tap-highlight-color:transparent}
-.btn:active{opacity:0.85}
-.go{background:#40d090;color:#071a10}
-.stop{background:#E24B4A;color:#fff}
+.btn{width:100%;padding:clamp(12px,3.4vw,18px);border-radius:18px;border:none;font-size:clamp(15px,3.8vw,19px);font-weight:600;letter-spacing:0.01em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;-webkit-tap-highlight-color:transparent;transition:transform .12s,box-shadow .25s,background .25s}
+.btn:active{transform:scale(0.97)}
+/* Start: frisches Grün mit Verlauf + dezentem Leuchten */
+.go{background:linear-gradient(135deg,#4be0a0,#2bb87a);color:#06241a;box-shadow:0 6px 20px rgba(64,208,144,0.35)}
+/* Stopp: golden/orange statt rot – wirkt weniger alarmierend, passt zur Praxis */
+.stop{background:linear-gradient(135deg,#f6c14b,#ec8a2e);color:#3a2400;box-shadow:0 6px 20px rgba(240,160,60,0.4)}
 
 .dbg{width:100%;background:#181830;border-radius:12px;padding:7px 12px;display:flex;flex-wrap:wrap;gap:3px 14px}
 .dbg span{font-size:10px;color:#505080}
@@ -204,20 +226,20 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
 .hcell.l2{background:#3a35a0}
 .hcell.l3{background:#534AB7}
 .hcell.l4{background:#40d090}
-/* Manuell als "Praxis durchgeführt" markierter Tag (shambhaviDays). Deutlich
-   sichtbar: kräftiges Grün mit Leuchtring, fette dunkle Tageszahl und ein klar
-   erkennbares Häkchen – hebt sich eindeutig von den session-basierten Stufen
-   (l2–l4) ab, auch wenn l4 ebenfalls grünlich ist. */
+/* Manuell als "Praxis durchgeführt" markierter Tag (shambhaviDays). Gleiche
+   Lilafarbe wie die system-erkannten Tage (l3, #534AB7), damit manuelle und
+   automatische Markierungen farblich einheitlich aussehen. Unterschieden werden
+   sie nur durch das Häkchen + Leuchtring, nicht mehr durch die Farbe. */
 .hcell.daydone{
-  background:linear-gradient(135deg,#4be0a0,#2bb87a);
-  box-shadow:0 0 0 2px #6effc0, 0 0 10px rgba(64,208,144,0.7);
+  background:linear-gradient(135deg,#6a5fd0,#473d9e);
+  box-shadow:0 0 0 2px #8b80e8, 0 0 10px rgba(83,74,183,0.7);
 }
 .calcell.daydone{z-index:1}
-.calcell.daydone .caldnum{color:#06241a;font-weight:700}
+.calcell.daydone .caldnum{color:#fff;font-weight:700}
 /* Großes, gut sichtbares Häkchen unten links in der Zelle */
 .calcell.daydone::before{
   content:'✓';position:absolute;left:2px;bottom:0;
-  font-size:13px;line-height:1;font-weight:900;color:#06241a;
+  font-size:13px;line-height:1;font-weight:900;color:#fff;
   pointer-events:none;
 }
 /* Kurzer "Pop" beim Abhaken, damit der Tag aktiv aufleuchtet */
@@ -363,9 +385,16 @@ html,body{width:100%;height:100%;background:#12122a;font-family:-apple-system,Bl
       </div>
     </div>
 
+    <div class="phasebar" id="phasebar">
+      <div class="phase-seg" data-phase="p"><span class="phase-dot"></span>Vorbereitung</div>
+      <div class="phase-seg" data-phase="c"><span class="phase-dot"></span>Chanten</div>
+      <div class="phase-seg" data-phase="e"><span class="phase-dot"></span>Nachklang</div>
+    </div>
+
     <div>
       <div id="big" class="aum-num">0</div>
       <div class="aum-lbl">AUMs gezählt</div>
+      <button id="btn-minus" class="count-correct" onclick="decrementCount()">− Falsch gezählt</button>
     </div>
 
     <div id="goalbanner">
@@ -742,7 +771,9 @@ function toggleSetting(key){
   el.classList.toggle('on');
 }
 function saveSettings(){
-  if(run){flash('Bitte erst die laufende Praxis stoppen','#E24B4A');return;}
+  // Speichern ist jetzt auch während einer laufenden Praxis möglich. SET wird
+  // unten sofort aktualisiert, die laufende Sitzung übernimmt die neuen Werte
+  // (Ziel, Mindestdauer, Töne) unmittelbar – ohne Stopp.
   // Ober- UND Untergrenze erzwingen (entsprechen den min/max der <input>-Felder) –
   // sonst können über Tastatureingabe/Paste Werte außerhalb des sinnvollen Bereichs
   // gespeichert werden, z.B. eine Mindestdauer von 9999s, ab der nie mehr ein AUM zählt.
@@ -779,9 +810,10 @@ function saveSettings(){
     flash('Einstellungen können nicht dauerhaft gespeichert werden','#E24B4A');
     setTimeout(()=>{$('set-note').textContent='Wirkt sich auf die nächste Session aus';},4000);
   }
-  // Fortschrittsanzeige im Zähler-Tab an die neue Zieleinstellung anpassen
-  // (nur relevant, falls man zwischen den Tabs wechselt, ohne neu zu starten)
-  if(!run) updateProgress();
+  // Fortschrittsanzeige/Punkte an das (evtl. geänderte) Ziel anpassen – auch
+  // während einer laufenden Praxis, damit das neue Ziel sofort sichtbar greift.
+  updateProgress();
+  dots();
 }
 loadSettings();
 diagnoseStorage().then(()=>{reconcileSettingsFromIdb();reconcileHistFromIdb();});
@@ -841,6 +873,40 @@ function updateStats(dur){
     $('stat-avg').textContent=avgDur.toFixed(1);
   }
   if(dur) $('stat-last').textContent=dur.toFixed(1);
+}
+
+// Phasen-Anzeige aktualisieren: hebt das Segment der aktuellen Phase hervor.
+// p='' (oder unbekannt) -> kein Segment aktiv (Ruhezustand).
+function updatePhaseUI(p){
+  document.querySelectorAll('.phase-seg').forEach(seg=>{
+    seg.classList.toggle('active',seg.dataset.phase===p);
+  });
+}
+
+// Korrektur: AUM-Anzahl um 1 zurücknehmen, falls ein Fremdgeräusch fälschlich
+// gezählt wurde. Nimmt auch die zuletzt gespeicherte Einzeldauer zurück und
+// rechnet Ø/Letztes neu, damit die Statistik konsistent bleibt.
+function decrementCount(){
+  if(cnt<=0){flash('Schon bei 0','#7080b0');return;}
+  cnt--;
+  if(durations.length>0)durations.pop();
+  if(durations.length>0){
+    avgDur=durations.reduce((a,b)=>a+b)/durations.length;
+    $('stat-avg').textContent=avgDur.toFixed(1);
+    $('stat-last').textContent=durations[durations.length-1].toFixed(1);
+  } else {
+    avgDur=0;$('stat-avg').textContent='–';$('stat-last').textContent='–';
+  }
+  $('big').textContent=cnt;
+  // Unter das Ziel zurückgefallen: Ziel-Status zurücksetzen, damit der Gong beim
+  // erneuten Erreichen wieder auslösen kann und die Goal-Optik verschwindet.
+  if(cnt<GOALN()){
+    goalShown=false;
+    $('big').classList.remove('goal');
+    $('goalbanner').classList.remove('show');
+  }
+  updateProgress();dots();
+  flash('Korrigiert – '+cnt+' AUMs','#f0a850');
 }
 
 function dots(){
@@ -1099,6 +1165,7 @@ function tick(){
   const nowMs=Date.now();
   tot=Math.floor((nowMs-sessionStartMs)/1000);
   const p=ph();
+  updatePhaseUI(p); // Phasen-Leiste auf aktuelle Phase setzen
   if(p==='c'){
     if(chantStartWallMs===0){chantStartWallMs=nowMs;flash('Jetzt singen!','#40d090');}  // Bug A: Phasenübergang hier erkennbar
     csec=Math.floor((nowMs-chantStartWallMs)/1000);
@@ -1181,6 +1248,8 @@ function toggle(){
     $('tsub').textContent='Gesamt';
     $('pill').textContent='Vorbereitung';$('pill').className='pill p';
     ring1(0,'#378ADD');ring2(0,'#534AB7');
+    updatePhaseUI('p'); // Phasen-Leiste sofort auf Vorbereitung
+    $('btn-minus').classList.add('show'); // Korrektur-Knopf während der Praxis zeigen
     sessionStartMs=Date.now();chantStartWallMs=0; // Bug 3: Wanduhr-Anker setzen
     updateProgress();dots();mic();iv=setInterval(tick,1000);
     b.className='btn stop';b.innerHTML='⏹ Stoppen';
@@ -1188,6 +1257,8 @@ function toggle(){
     const lastPhase=ph();
     run=false;clearInterval(iv);stopaudio();
     b.className='btn go';b.innerHTML='▶ Starten';
+    updatePhaseUI(''); // Phasen-Leiste in den Ruhezustand
+    $('btn-minus').classList.remove('show'); // Korrektur-Knopf ausblenden
     $('pill').textContent='Beendet';$('pill').className='pill';
     // Bug B: ring1(0,...) würde den Ring auf leer zurücksetzen – letzten Stand behalten,
     // nur Farbe auf neutral setzen, damit der Fortschritt nach dem Stopp sichtbar bleibt.
